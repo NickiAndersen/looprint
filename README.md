@@ -42,6 +42,8 @@ The core logic is based on [Factorian Designs](https://factoriandesigns.com/prin
 
 ✅ **Start and end code are added automatically for all file types**
 
+**Note:** Maximum file size: 150MB
+
 ## How to Use Looprint
 
 ### 1. Upload your file
@@ -168,6 +170,7 @@ After push-off, the hotend moves to a safe X position to avoid collisions.
 
 ### File won't upload
 - Ensure valid `.gcode` or `.3mf`
+- **Maximum file size:** 150MB
 
 ### Wrong placement detected
 - Make sure model is clearly on one side of the bed
@@ -183,6 +186,7 @@ After push-off, the hotend moves to a safe X position to avoid collisions.
 - Check slicer settings
 
 ### File too large
+- **Maximum file size:** 150MB
 - Large files take longer to process
 - Watch the progress bar
 
@@ -201,6 +205,14 @@ After push-off, the hotend moves to a safe X position to avoid collisions.
 ## Need Help?
 
 If you run into issues or want to better understand the automation concept, watch the [Factorian Designs video](https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2) that this system is based on. It explains the mechanics and safety considerations in detail.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+© 2025 Nicki Andersen
 
 ---
 
