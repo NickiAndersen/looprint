@@ -562,10 +562,63 @@
         </div>
     </div>
 
+    <div class="bed-preview-wrapper">
+        <div class="bed-preview" id="bedPreviewContainer">
+            <div class="bed-label bed-label-front" data-lang="bedPreviewFront">FRONT</div>
+            <div class="bed-label bed-label-back" data-lang="bedPreviewBack">BACK</div>
+            <div class="bed-label bed-label-left" data-lang="bedPreviewLeft">LEFT</div>
+            <div class="bed-label bed-label-right" data-lang="bedPreviewRight">RIGHT</div>
+            <div class="bed-zone center" id="zone-center" onclick="selectDirection('center')"><span data-lang="bedZoneCenter">Center</span></div>
+            <div class="bed-zone right" id="zone-right" onclick="selectDirection('right')"><span data-lang="bedZoneRight">Right</span></div>
+            <div class="bed-zone left" id="zone-left" onclick="selectDirection('left')"><span data-lang="bedZoneLeft">Left</span></div>
+        </div>
+        <div class="bed-preview-text">
+            <strong data-lang="bedPreviewTitle">Bed Preview & Model Placement</strong>
+            <p class="help-text" data-lang="bedPreviewText">
+                The zone with the <strong style="color: var(--accent);">green border</strong> is the selected push direction.
+                <br><span style="font-size: 0.85em;">In advanced mode, you can click any zone to change it after file upload.</span>
+            </p>
+            <p class="bed-offset-line">
+                <span data-lang="bedPreviewOffsetLabel">Z push offset:</span>
+                <strong><span id="bedOffsetDisplay">30</span> mm</strong>
+                <span data-lang="bedPreviewOffsetSuffix">below top of print</span>
+            </p>
+            <p id="sweepIndicator" class="bed-offset-line" style="display: none; color: var(--accent); margin-top: 8px;">
+                <span style="font-weight: 600;">🧹 Full Bed Sweep:</span>
+                <strong><span id="sweepStatusText">Enabled</span></strong>
+                <span style="font-size: 0.85em; color: var(--muted);">(7 passes after each loop)</span>
+            </p>
+            <p class="offset-warning" data-lang="zOffsetWarning">⚠️ Advanced: Incorrect values can cause collisions.</p>
+            <div id="directionWarning" class="direction-warning">
+                ⚠️ <strong>Warning:</strong> You have changed the push direction from the automatically detected direction. Make sure this matches your model placement.
+        </div>
+            <div id="directionInfo" class="direction-info">
+                ℹ️ <strong>Auto-detected:</strong> Push direction was automatically set based on model placement.
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-row" style="margin-top: 20px; margin-bottom: 20px;">
+        <button class="primary" id="generateBtn" onclick="processFiles()" data-lang="generateBtn">
+            Generate Loop File
+        </button>
+        <button class="secondary" id="generateTestBtn" onclick="showTestFileInfo()" data-lang="generateTestBtn" style="display:none;" title="Generate a test file with only push-off sequence for testing">
+            Generate Test File
+        </button>
+        <button class="secondary" id="generateSweepTestBtn" onclick="generateSweepTestFile()" style="display:none;" title="Generate a test file with only sweep sequence for testing">
+            Generate Sweep Test File
+        </button>
+        <button class="secondary" onclick="resetDefaults()" data-lang="resetBtn">
+            Reset to Defaults
+        </button>
+    </div>
+
+    <p id="statusMessage"></p>
+
     <div class="section" id="endCodeSection">
         <div class="section-title" data-lang="endSectionTitle">3. Push-off Configuration (Advanced)</div>
         <p class="help-text" data-lang="endSectionHelp">
-            Push direction is automatically detected from your file. <strong>You can click the zones in the bed preview below to change it manually.</strong>
+            Push direction is automatically detected from your file. <strong>You can click the zones in the bed preview above to change it manually.</strong>
             <br><span style="font-size: 0.85em; color: var(--muted);">Note: In simple mode, push direction is locked to the auto-detected value. In advanced mode, you can change it but will see a warning if it differs from the auto-detected direction.</span>
         </p>
         
@@ -593,46 +646,37 @@
                 <p id="pushLaneOffsetMaxInfo" style="font-size: 0.75rem; margin-top: 4px; display: none; color: var(--muted);"></p>
                 <p class="help-text">Distance from model center for left/right push lanes. Default 30mm. Auto-adjusted if too large for model placement.</p>
             </div>
+            <div class="col">
+                <label for="pushSpeedInput">Push-off Speed (mm/min)</label>
+                <input type="number" id="pushSpeedInput" value="300" min="100" max="1000" step="50" oninput="saveSettings(); updateEndCodeTextareas();">
+                <p class="help-text">Speed of the push-off motion. Default 300mm/min. Lower = slower, safer for delicate prints.</p>
+            </div>
         </div>
 
-        <div class="bed-preview-wrapper">
-            <div class="bed-preview" id="bedPreviewContainer">
-                <div class="bed-label bed-label-front" data-lang="bedPreviewFront">FRONT</div>
-                <div class="bed-label bed-label-back" data-lang="bedPreviewBack">BACK</div>
-                <div class="bed-label bed-label-left" data-lang="bedPreviewLeft">LEFT</div>
-                <div class="bed-label bed-label-right" data-lang="bedPreviewRight">RIGHT</div>
-                <div class="bed-zone center" id="zone-center" onclick="selectDirection('center')"><span data-lang="bedZoneCenter">Center</span></div>
-                <div class="bed-zone right" id="zone-right" onclick="selectDirection('right')"><span data-lang="bedZoneRight">Right</span></div>
-                <div class="bed-zone left" id="zone-left" onclick="selectDirection('left')"><span data-lang="bedZoneLeft">Left</span></div>
+        <div class="setting-block" style="margin-top: 20px;">
+            <div class="checkbox-container">
+                <input type="checkbox" id="enableSweep" onchange="saveSettings(); toggleSweepSettings(); updateEndCodeTextareas();">
+                <label for="enableSweep">
+                    <span>Enable Full Bed Sweep</span>
+                </label>
             </div>
-            <div class="bed-preview-text">
-                <strong data-lang="bedPreviewTitle">Bed Preview & Model Placement</strong>
-                <p class="help-text" data-lang="bedPreviewText">
-                    The zone with the <strong style="color: var(--accent);">green border</strong> is the selected push direction.
-                    <br><span style="font-size: 0.85em;">In advanced mode, you can click any zone to change it after file upload.</span>
-                </p>
-                <p class="bed-offset-line">
-                    <span data-lang="bedPreviewOffsetLabel">Z push offset:</span>
-                    <strong><span id="bedOffsetDisplay">30</span> mm</strong>
-                    <span data-lang="bedPreviewOffsetSuffix">below top of print</span>
-                </p>
-                <p class="offset-warning" data-lang="zOffsetWarning">⚠️ Advanced: Incorrect values can cause collisions.</p>
-                <div id="directionWarning" class="direction-warning">
-                    ⚠️ <strong>Warning:</strong> You have changed the push direction from the automatically detected direction. Make sure this matches your model placement.
-            </div>
-                <div id="directionInfo" class="direction-info">
-                    ℹ️ <strong>Auto-detected:</strong> Push direction was automatically set based on model placement.
+            <p class="help-text" style="margin-top: 5px; margin-left: 24px;">Sweeps entire bed in 7 passes (safe one-way back-to-front pattern) after push-off to clear any debris. Returns in straight line before shifting to next pass. Default Z: 1mm (bed level), adjustable.</p>
+            
+            <div id="sweepSettings" style="margin-top: 15px; margin-left: 24px; display: none;">
+                <div class="row" style="margin-top: 10px;">
+                    <div class="col">
+                        <label for="sweepSpeedInput">Sweep Speed (mm/min)</label>
+                        <input type="number" id="sweepSpeedInput" value="300" min="100" max="1000" step="50" oninput="saveSettings(); updateEndCodeTextareas();">
+                        <p class="help-text">Speed of the sweep motion. Default 300mm/min. Always runs 7 passes with automatic spacing.</p>
+                    </div>
+                    <div class="col">
+                        <label for="sweepZInput">Sweep Z Height (mm)</label>
+                        <input type="number" id="sweepZInput" value="1" min="0.5" max="50" step="0.5" oninput="saveSettings(); updateEndCodeTextareas();">
+                        <p class="help-text">Z height for sweep (distance above bed). Default 1mm (bed level). Lower = closer to bed.</p>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div id="placementDebug" style="display:none; margin-top: 20px; padding-top: 15px; border-top: 1px dashed var(--border);">
-             <p class="help-text" style="font-size: 0.75rem; color: var(--accent); font-weight: 600; margin: 0 0 4px;" data-lang="debugHeaderTitle">
-                 📍 Model Placement Analysis:
-             </p>
-             <p style="margin: 0; font-size: 0.75rem; color: var(--muted); font-family: ui-monospace, SFMono-Regular, monospace;" id="debugOutputContent"></p>
-        </div>
-
         <div id="block-start" class="code-section" style="margin-top: 20px;">
             <div class="code-header">
                 <div class="code-title">Start G-code</div>
@@ -679,20 +723,6 @@
         </div>
 
     </div>
-
-    <div class="btn-row">
-        <button class="primary" id="generateBtn" onclick="processFiles()" data-lang="generateBtn">
-            Generate Loop File
-        </button>
-        <button class="secondary" id="generateTestBtn" onclick="showTestFileInfo()" data-lang="generateTestBtn" style="display:none;" title="Generate a test file with only push-off sequence for testing">
-            Generate Test File
-        </button>
-        <button class="secondary" onclick="resetDefaults()" data-lang="resetBtn">
-            Reset to Defaults
-        </button>
-    </div>
-
-    <p id="statusMessage"></p>
     
     <div id="loadingContainer" class="loading-container">
         <div class="progress-bar-container">
@@ -870,6 +900,23 @@
                                     <li>Warning shown if manually changed from auto-detected direction</li>
                                 </ul>
                             </li>
+                            <li><strong>Push-off Speed:</strong> Speed of the push-off motion
+                                <ul>
+                                    <li>Default: 300 mm/min</li>
+                                    <li>Range: 100 - 1000 mm/min</li>
+                                    <li>Lower = slower, safer for delicate prints</li>
+                                </ul>
+                            </li>
+                            <li><strong>Full Bed Sweep (optional):</strong> Sweeps entire bed after push-off to clear debris
+                                <ul>
+                                    <li>Runs 7 passes in safe one-way back-to-front pattern</li>
+                                    <li>Sweep Speed: Default 300 mm/min (range: 100-1000 mm/min)</li>
+                                    <li>Sweep Z Height: Default 1mm (bed level, range: 0.5-50mm)</li>
+                                    <li>Always runs 7 passes with automatic spacing</li>
+                                    <li>Respects safe bed boundaries to avoid collisions</li>
+                                    <li>Can be tested separately with "Generate Sweep Test File" button (appears when enabled)</li>
+                                </ul>
+                            </li>
                             <li><strong>Safety confirmation:</strong> Checkbox to confirm your model was sliced with Brim and placed at the edge of the bed (required before generating)</li>
                         </ul>
                     </li>
@@ -878,6 +925,7 @@
                         <ul>
                             <li>Click "Generate Loop File" to create the looped file</li>
                             <li>Or click "Generate Test File" (appears after file upload) to test just the push-off sequence</li>
+                            <li>Or click "Generate Sweep Test File" (appears when Full Bed Sweep is enabled) to test just the sweep sequence</li>
                             <li>Wait for processing to complete (progress bar shows status)</li>
                             <li>Download your looped file</li>
                             <li>Use "Reset to Defaults" button to reset all settings to defaults</li>
@@ -916,6 +964,9 @@
                 <p>
                     <strong>Safety Clear:</strong> After push-off, the hotend moves to a safe X position to avoid hitting the model on the next loop.
                 </p>
+                <p style="margin-top: 12px;">
+                    <strong>Full Bed Sweep (optional):</strong> If enabled, after push-off the hotend performs a full bed sweep in 7 passes (safe one-way back-to-front pattern) to clear any debris. The sweep runs at a low Z height (default 1mm) and respects safe bed boundaries to avoid collisions.
+                </p>
             </div>
 
             <div class="instructions-section">
@@ -934,7 +985,9 @@
                 <h3>Tips & Best Practices</h3>
                 <ul>
                     <li>Start with 2-3 loops to test before doing longer runs</li>
-                    <li>Use the "Generate Test File" option to test just the push-off sequence</li>
+                    <li>Use "Generate Test File" to test push-off sequence only</li>
+                    <li>Use "Generate Sweep Test File" (when Full Bed Sweep is enabled) to test sweep sequence only</li>
+                    <li>Full Bed Sweep is useful for clearing debris between loops, especially with multiple prints</li>
                     <li>Keep your bed clean and properly leveled</li>
                     <li>Ensure your model has a good first layer adhesion</li>
                     <li>The cooldown temperature (default 18°C) helps the finished print release from the bed so it can be pushed off</li>
@@ -1293,8 +1346,21 @@ M975 S1 ; turn on mech mode supression
     const MIN_PUSH_LANE_OFFSET = 10;     // Minimum offset (safety margin from bed edges)
     const MAX_PUSH_LANE_OFFSET = 60;     // Maximum offset (prevents excessive values)
     
+    // Push-off speed settings
+    const DEFAULT_PUSH_SPEED = 300;  // Default push-off speed (mm/min)
+    const MIN_PUSH_SPEED = 100;      // Minimum speed (mm/min)
+    const MAX_PUSH_SPEED = 1000;     // Maximum speed (mm/min)
+    
     // File size limits
     const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
+    
+    // Full bed sweep settings (always 7 passes with automatic spacing)
+    const DEFAULT_SWEEP_SPEED = 300;  // Default sweep speed (mm/min)
+    const MIN_SWEEP_SPEED = 100;      // Minimum speed (mm/min)
+    const MAX_SWEEP_SPEED = 1000;     // Maximum speed (mm/min)
+    const DEFAULT_SWEEP_Z = 1;        // Default sweep Z height (mm) - bed level
+    const MIN_SWEEP_Z = 0.5;          // Minimum Z height (mm)
+    const MAX_SWEEP_Z = 50;            // Maximum Z height (mm)
     
     // Debug mode - set to false for production
     const DEBUG_MODE = false; // Set to true to enable console logging for debugging
@@ -1420,7 +1486,7 @@ M975 S1 ; turn on mech mode supression
                 bedPreviewContainer.classList.remove('locked');
                 updateDirectionInfo();
                 // Show debug info if available
-                if (lastDebugData) {
+                if (lastDebugData && debugEl) {
                     debugEl.style.display = "block";
                 }
             }
@@ -1430,10 +1496,12 @@ M975 S1 ; turn on mech mode supression
             if (autoDetectedDirection !== null) {
                 bedPreviewContainer.classList.add('locked');
             }
-            // Hide warnings and debug when hiding advanced
+            // Hide warnings and debug when hiding advanced (but keep directionInfo visible)
             document.getElementById("directionWarning").style.display = "none";
-            document.getElementById("directionInfo").style.display = "none";
-            debugEl.style.display = "none";
+            // directionInfo should still be visible in simple mode to show auto-detected direction
+            if (debugEl) debugEl.style.display = "none";
+            // Update direction info to show auto-detected message
+            updateDirectionInfo();
         }
         
         // Save preference to localStorage
@@ -1441,6 +1509,116 @@ M975 S1 ; turn on mech mode supression
             localStorage.setItem('looprint_showAdvanced', checkbox.checked ? 'true' : 'false');
         } catch (e) {
             if (DEBUG_MODE) console.warn("Could not save advanced settings preference:", e);
+        }
+    }
+    
+    /**
+     * Toggles visibility of sweep settings based on checkbox state
+     */
+    function toggleSweepSettings() {
+        const enableSweep = document.getElementById("enableSweep");
+        const sweepSettings = document.getElementById("sweepSettings");
+        const sweepTestBtn = document.getElementById("generateSweepTestBtn");
+        const sweepIndicator = document.getElementById("sweepIndicator");
+        
+        if (enableSweep && sweepSettings) {
+            sweepSettings.style.display = enableSweep.checked ? 'block' : 'none';
+        }
+        
+        // Show/hide sweep indicator in bed preview
+        if (sweepIndicator && enableSweep) {
+            sweepIndicator.style.display = enableSweep.checked ? 'block' : 'none';
+        }
+        
+        // Show/hide sweep test button based on sweep being enabled
+        if (sweepTestBtn) {
+            // Only show if sweep is enabled AND a file has been uploaded (test button is visible)
+            const testBtn = DOM.generateTestBtn || document.getElementById("generateTestBtn");
+            const fileUploaded = testBtn && testBtn.style.display !== 'none';
+            sweepTestBtn.style.display = (enableSweep && enableSweep.checked && fileUploaded) ? 'inline-block' : 'none';
+        }
+    }
+    
+    /**
+     * Generates G-code for full bed sweep
+     * Always runs 7 passes: SAFE one-way back-to-front pattern
+     * Safety: Lifts before returning to avoid dragging debris into printer mechanics
+     * @param {number} zHeight - Z height for sweep (mm above bed, default 1mm)
+     * @param {number} speed - Speed of sweep motion (mm/min)
+     * @returns {string} Generated sweep G-code
+     */
+    function generateSweepGcode(zHeight = DEFAULT_SWEEP_Z, speed = DEFAULT_SWEEP_SPEED) {
+        try {
+            // Validate inputs
+            speed = Math.max(MIN_SWEEP_SPEED, Math.min(MAX_SWEEP_SPEED, parseFloat(speed) || DEFAULT_SWEEP_SPEED));
+            zHeight = Math.max(MIN_SWEEP_Z, Math.min(MAX_SWEEP_Z, parseFloat(zHeight) || DEFAULT_SWEEP_Z));
+            
+            // Use fixed Z height for sweep (default 1mm - bed level)
+            const zPositionLow = `G1 Z${zHeight.toFixed(1)} F600`;
+            
+            // Calculate Z position for lift (5mm above sweep height for safety)
+            const zPositionLift = `G1 Z${(zHeight + 5).toFixed(1)} F600`;
+            
+            // Calculate sweep parameters - always 7 passes across X-axis
+            // Use safe bed boundaries to avoid filament cutter on left and right edges
+            const NUM_PASSES = 7;
+            const frontY = 10;  // Front edge (10mm from front)
+            const backY = 256;   // Back edge
+            const safeBedWidth = BED_MAX_X - BED_MIN_X; // Safe bed width (246 - 10 = 236mm)
+            const xSpacing = safeBedWidth / (NUM_PASSES - 1); // Spacing between X passes (~39.33mm for 7 passes)
+            
+            // Calculate X positions for all 7 passes (left to right, within safe boundaries)
+            const xPositions = [];
+            for (let i = 0; i < NUM_PASSES; i++) {
+                xPositions.push(BED_MIN_X + (i * xSpacing)); // Start from BED_MIN_X (10mm), not 0
+            }
+            
+            // Generate sweep G-code
+            let sweepCode = `; --- FULL BED SWEEP (Looprint) ---
+; SAFE one-way back-to-front pattern (7 passes across X-axis)
+; Pattern: Lift → Rapid return to back (in air) → Drop → Push forward slowly
+; Speed: ${speed}mm/min (forward push), F12000 (rapid return in air)
+M400 ; Wait for all motion to complete
+G1 E-0.5 F300 ; Retract filament slightly
+${zPositionLow} ; Move to bed level (as low as possible)
+M400 ; Wait for motion to complete
+
+; Start at back-left position
+G1 X${xPositions[0].toFixed(1)} Y${backY} F5000 ; Move to start position (left edge, back)
+`;
+            
+            // Generate sweep passes: Each pass follows "Lift-Return-Drop-Push" cycle
+            // Pattern: Always push back-to-front (Y=256 to Y=10) to avoid dragging debris
+            for (let i = 0; i < NUM_PASSES; i++) {
+                const xPos = xPositions[i];
+                
+                // Pass ${i + 1}: Push forward from back to front (one-way only)
+                sweepCode += `; --- PASS ${i + 1}/${NUM_PASSES} (X=${xPos.toFixed(1)}) ---
+G1 X${xPos.toFixed(1)} Y${backY} F${speed} ; Position at back
+G1 X${xPos.toFixed(1)} Y${frontY} F${speed} ; PUSH: Forward from back to front (slow, clears debris)
+`;
+                
+                // If not last pass, return to back in straight line, then move to next X position
+                if (i < NUM_PASSES - 1) {
+                    const nextX = xPositions[i + 1];
+                    sweepCode += `G1 X${xPos.toFixed(1)} Y${backY} F12000 ; RETURN: Move back to back edge in straight line (same X, fast)
+M400 ; Wait for return to complete
+G1 X${nextX.toFixed(1)} Y${backY} F12000 ; SHIFT: Move to next X position at back (fast)
+M400 ; Wait for shift to complete
+`;
+                }
+            }
+            
+            // Final return to safe position
+            sweepCode += `G1 X${BED_MIN_X} Y${frontY} F12000 ; Return to safe left position at front (avoids filament cutter)
+M400 ; Wait for all motion to complete
+; --- END FULL BED SWEEP ---
+`;
+            
+            return sweepCode;
+        } catch (error) {
+            if (DEBUG_MODE) console.error("Error in generateSweepGcode:", error);
+            return ""; // Return empty string on error
         }
     }
     
@@ -1460,18 +1638,13 @@ M975 S1 ; turn on mech mode supression
         }
         
         const isAdvanced = (DOM.showAdvancedSettings || document.getElementById("showAdvancedSettings")).checked;
-        if (!isAdvanced) {
-            directionWarning.style.display = "none";
-            directionInfo.style.display = "none";
-            return;
-        }
         
         // Clear existing content
         directionWarning.textContent = '';
         directionInfo.textContent = '';
         
         if (currentDirection === autoDetectedDirection) {
-            // Matches auto-detected
+            // Matches auto-detected - show info in both simple and advanced mode
             directionWarning.style.display = "none";
             directionInfo.style.display = "block";
             
@@ -1484,18 +1657,32 @@ M975 S1 ; turn on mech mode supression
             directionInfo.appendChild(strong);
             directionInfo.appendChild(text);
         } else {
-            // Changed from auto-detected
-            directionWarning.style.display = "block";
-            directionInfo.style.display = "none";
-            
-            // Use createElement for safe HTML insertion
-            const icon = document.createTextNode("⚠️ ");
-            const strong = document.createElement("strong");
-            strong.textContent = "Warning: ";
-            const text = document.createTextNode(`Auto-detected direction was "${autoDetectedDirection}", but you've changed it to "${currentDirection}". Make sure this matches your model placement.`);
-            directionWarning.appendChild(icon);
-            directionWarning.appendChild(strong);
-            directionWarning.appendChild(text);
+            // Changed from auto-detected - only show warning in advanced mode
+            if (isAdvanced) {
+                directionWarning.style.display = "block";
+                directionInfo.style.display = "none";
+                
+                // Use createElement for safe HTML insertion
+                const icon = document.createTextNode("⚠️ ");
+                const strong = document.createElement("strong");
+                strong.textContent = "Warning: ";
+                const text = document.createTextNode(`Auto-detected direction was "${autoDetectedDirection}", but you've changed it to "${currentDirection}". Make sure this matches your model placement.`);
+                directionWarning.appendChild(icon);
+                directionWarning.appendChild(strong);
+                directionWarning.appendChild(text);
+            } else {
+                // In simple mode, if direction was changed (shouldn't happen, but just in case), show info
+                directionWarning.style.display = "none";
+                directionInfo.style.display = "block";
+                
+                const icon = document.createTextNode("ℹ️ ");
+                const strong = document.createElement("strong");
+                strong.textContent = "Auto-detected: ";
+                const text = document.createTextNode(`Push direction "${autoDetectedDirection}" was automatically set based on model placement.`);
+                directionInfo.appendChild(icon);
+                directionInfo.appendChild(strong);
+                directionInfo.appendChild(text);
+            }
         }
     }
 
@@ -1670,6 +1857,44 @@ M975 S1 ; turn on mech mode supression
                     }
                 }
             }
+            
+            // Load push-off speed
+            const savedPushSpeed = localStorage.getItem('looprint_pushSpeed');
+            const pushSpeedInput = document.getElementById("pushSpeedInput");
+            if (pushSpeedInput && savedPushSpeed) {
+                const pushSpeed = parseFloat(savedPushSpeed);
+                if (!isNaN(pushSpeed) && pushSpeed >= MIN_PUSH_SPEED && pushSpeed <= MAX_PUSH_SPEED) {
+                    pushSpeedInput.value = pushSpeed;
+                }
+            }
+            
+            // Load sweep settings
+            const savedEnableSweep = localStorage.getItem('looprint_enableSweep');
+            const savedSweepSpeed = localStorage.getItem('looprint_sweepSpeed');
+            const savedSweepZ = localStorage.getItem('looprint_sweepZ');
+            
+            const enableSweep = document.getElementById("enableSweep");
+            const sweepSpeedInput = document.getElementById("sweepSpeedInput");
+            const sweepZInput = document.getElementById("sweepZInput");
+            
+            if (enableSweep && savedEnableSweep === 'true') {
+                enableSweep.checked = true;
+                toggleSweepSettings();
+            }
+            
+            if (sweepSpeedInput && savedSweepSpeed) {
+                const speed = parseFloat(savedSweepSpeed);
+                if (!isNaN(speed) && speed >= MIN_SWEEP_SPEED && speed <= MAX_SWEEP_SPEED) {
+                    sweepSpeedInput.value = speed;
+                }
+            }
+            
+            if (sweepZInput && savedSweepZ) {
+                const zHeight = parseFloat(savedSweepZ);
+                if (!isNaN(zHeight) && zHeight >= MIN_SWEEP_Z && zHeight <= MAX_SWEEP_Z) {
+                    sweepZInput.value = zHeight;
+                }
+            }
         } catch (e) {
             // localStorage might not be available (e.g., private browsing mode)
             // This is handled gracefully - defaults will be used
@@ -1680,6 +1905,7 @@ M975 S1 ; turn on mech mode supression
         updateEndCodeTextareas();
         updateStartCodeTextarea(null); // Show template on page load
         checkCooldownWarning();
+        toggleSweepSettings(); // Initialize sweep settings visibility
         selectDirection('center', false);
             (DOM.generateBtn || document.getElementById("generateBtn")).disabled = true;
         document.getElementById("bedPreviewContainer").classList.remove('locked');
@@ -1721,6 +1947,8 @@ M975 S1 ; turn on mech mode supression
         const debugOutput = document.getElementById("debugOutputContent");
         
         // Clear existing content safely
+        if (!debugOutput) return; // Exit if element doesn't exist
+        
         debugOutput.textContent = '';
         
         let minX = lastDebugData.minX.toFixed(1);
@@ -1762,6 +1990,24 @@ M975 S1 ; turn on mech mode supression
             const pushLaneOffsetInput = document.getElementById("pushLaneOffsetInput");
             if (pushLaneOffsetInput) {
                 localStorage.setItem('looprint_pushLaneOffset', pushLaneOffsetInput.value);
+            }
+            // Save push-off speed
+            const pushSpeedInput = document.getElementById("pushSpeedInput");
+            if (pushSpeedInput) {
+                localStorage.setItem('looprint_pushSpeed', pushSpeedInput.value);
+            }
+            // Save sweep settings
+            const enableSweep = document.getElementById("enableSweep");
+            const sweepSpeedInput = document.getElementById("sweepSpeedInput");
+            const sweepZInput = document.getElementById("sweepZInput");
+            if (enableSweep) {
+                localStorage.setItem('looprint_enableSweep', enableSweep.checked ? 'true' : 'false');
+            }
+            if (sweepSpeedInput) {
+                localStorage.setItem('looprint_sweepSpeed', sweepSpeedInput.value);
+            }
+            if (sweepZInput) {
+                localStorage.setItem('looprint_sweepZ', sweepZInput.value);
             }
         } catch (e) {
             // localStorage might not be available (e.g., private browsing mode)
@@ -2154,8 +2400,8 @@ M975 S1 ; turn on mech mode supression
     function validateFileImmediate() {
         const fileInput = DOM.fileInput || document.getElementById("fileInput");
         const statusEl = document.getElementById("fileValidationStatus");
-        const debugEl = document.getElementById("placementDebug");
-        const debugOutput = document.getElementById("debugOutputContent");
+        const debugEl = document.getElementById("placementDebug"); // May not exist if removed
+        const debugOutput = document.getElementById("debugOutputContent"); // May not exist if removed
         const genBtn = DOM.generateBtn || document.getElementById("generateBtn");
         const outputEl = DOM.output || document.getElementById("output");
         const bedPreviewContainer = document.getElementById("bedPreviewContainer");
@@ -2166,11 +2412,15 @@ M975 S1 ; turn on mech mode supression
 
         if (!fileInput.files.length) {
             statusEl.style.display = "none";
-            debugEl.style.display = "none";
+            if (debugEl) debugEl.style.display = "none";
             genBtn.disabled = true;
             const testBtn = DOM.generateTestBtn || document.getElementById("generateTestBtn");
             if (testBtn) {
                 testBtn.style.display = "none";
+            }
+            const sweepTestBtn = document.getElementById("generateSweepTestBtn");
+            if (sweepTestBtn) {
+                sweepTestBtn.style.display = "none";
             }
             outputEl.style.display = "none";
             bedPreviewContainer.classList.remove('locked');
@@ -2198,7 +2448,7 @@ M975 S1 ; turn on mech mode supression
             statusEl.style.display = "block";
             genBtn.disabled = true;
             outputEl.style.display = "none";
-            debugEl.style.display = "none";
+            if (debugEl) debugEl.style.display = "none";
             bedPreviewContainer.classList.remove('locked');
             return;
         }
@@ -2206,8 +2456,8 @@ M975 S1 ; turn on mech mode supression
         genBtn.disabled = true; 
         outputEl.style.display = "none";
         statusEl.style.display = "none";
-        debugEl.style.display = "none";
-        debugOutput.textContent = ''; 
+        if (debugEl) debugEl.style.display = "none";
+        if (debugOutput) debugOutput.textContent = ''; 
         bedPreviewContainer.classList.remove('locked');
 
         document.getElementById("statSourceName").textContent = file.name; 
@@ -2307,24 +2557,33 @@ M975 S1 ; turn on mech mode supression
                         
                         // Show debug info if advanced settings are enabled
                         const isAdvanced = (DOM.showAdvancedSettings || document.getElementById("showAdvancedSettings")).checked;
-                        if (isAdvanced) {
+                        if (isAdvanced && debugEl) {
                             renderDebugText();
                             debugEl.style.display = "block";
-                        } else {
+                        } else if (debugEl) {
                             debugEl.style.display = "none";
                         }
                         
                         // Lock bed preview in simple mode, unlock in advanced mode
                         if (isAdvanced) {
                             bedPreviewContainer.classList.remove('locked');
+                            updateDirectionInfo();
                         } else {
                             bedPreviewContainer.classList.add('locked');
+                            // Update direction info to show auto-detected message in simple mode
+                            updateDirectionInfo();
                         }
                         
                         // Show test file button (works for 3MF too now that we have G-code content)
                         const testBtn = DOM.generateTestBtn || document.getElementById("generateTestBtn");
                         if (testBtn) {
                             testBtn.style.display = "inline-block";
+                            // Show sweep test button only if sweep is enabled
+                            const enableSweep = document.getElementById("enableSweep");
+                            const sweepTestBtn = document.getElementById("generateSweepTestBtn");
+                            if (sweepTestBtn && enableSweep && enableSweep.checked) {
+                                sweepTestBtn.style.display = "inline-block";
+                            }
                         }
                     } catch (placementError) {
                         if (DEBUG_MODE) console.error("Error in determineModelPlacement for 3MF:", placementError);
@@ -2338,7 +2597,11 @@ M975 S1 ; turn on mech mode supression
                     statusEl.textContent = "File verified: Valid 3MF file detected. Start and end code will be added automatically.";
                     statusEl.style.color = "var(--accent)";
                     statusEl.style.display = "block";
-                    genBtn.disabled = false;
+                    // Ensure button is enabled - use setTimeout to ensure DOM updates are complete
+                    setTimeout(() => {
+                        genBtn.disabled = false;
+                        if (DEBUG_MODE) console.log("3MF validation successful - Generate button enabled");
+                    }, 0);
                     
                     // Update stats display (same as for G-code files)
                     const loopsForDisplay = parseInt(document.getElementById("loopCount").value, 10) || DEFAULT_LOOPS;
@@ -2440,12 +2703,22 @@ M975 S1 ; turn on mech mode supression
                         if (DEBUG_MODE) console.warn("Error updating push lane offset:", offsetError);
                     }
                     
-                    genBtn.disabled = false;
+                    // Ensure button is enabled - use setTimeout to ensure DOM updates are complete
+                    setTimeout(() => {
+                        genBtn.disabled = false;
+                        if (DEBUG_MODE) console.log("G-code validation successful - Generate button enabled");
+                    }, 0);
                     
                     // Show test file button when file is validated
                     const testBtn = DOM.generateTestBtn || document.getElementById("generateTestBtn");
                     if (testBtn) {
                         testBtn.style.display = "inline-block";
+                        // Show sweep test button only if sweep is enabled
+                        const enableSweep = document.getElementById("enableSweep");
+                        const sweepTestBtn = document.getElementById("generateSweepTestBtn");
+                        if (sweepTestBtn && enableSweep && enableSweep.checked) {
+                            sweepTestBtn.style.display = "inline-block";
+                        }
                     }
                     
                     const loopsForDisplay = parseInt(document.getElementById("loopCount").value, 10) || DEFAULT_LOOPS; 
@@ -2461,10 +2734,12 @@ M975 S1 ; turn on mech mode supression
                     
                     // Show debug only if advanced settings are enabled
                     const isAdvanced = document.getElementById("showAdvancedSettings").checked;
-                    if (isAdvanced) {
-                        debugEl.style.display = "block";
-                    } else {
-                        debugEl.style.display = "none";
+                    if (debugEl) {
+                        if (isAdvanced) {
+                            debugEl.style.display = "block";
+                        } else {
+                            debugEl.style.display = "none";
+                        }
                     }
                     
                     // Update footer text for G-code files
@@ -2477,6 +2752,8 @@ M975 S1 ; turn on mech mode supression
                     if (!isAdvanced) {
                         // Simple mode: always lock after file upload
                     bedPreviewContainer.classList.add('locked');
+                    // Update direction info to show auto-detected message in simple mode
+                    updateDirectionInfo();
                     } else {
                         // Advanced mode: unlock so user can change
                         bedPreviewContainer.classList.remove('locked');
@@ -2496,7 +2773,7 @@ M975 S1 ; turn on mech mode supression
                     if (validationColor === "var(--danger)") {
                         genBtn.disabled = true;
                         outputEl.style.display = "none";
-                        debugEl.style.display = "none";
+                        if (debugEl) debugEl.style.display = "none";
                         bedPreviewContainer.classList.remove('locked');
                     }
                 }
@@ -2511,7 +2788,7 @@ M975 S1 ; turn on mech mode supression
                 statusEl.style.display = "block";
                 genBtn.disabled = true;
                 outputEl.style.display = "none";
-                debugEl.style.display = "none";
+                if (debugEl) debugEl.style.display = "none";
                 bedPreviewContainer.classList.remove('locked');
                 if (DEBUG_MODE) console.error("Critical error during file validation:", error);
             }
@@ -2527,7 +2804,7 @@ M975 S1 ; turn on mech mode supression
             statusEl.style.display = "block";
             genBtn.disabled = true;
             outputEl.style.display = "none";
-            debugEl.style.display = "none";
+            if (debugEl) debugEl.style.display = "none";
             bedPreviewContainer.classList.remove('locked');
         };
         
@@ -2582,7 +2859,8 @@ M975 S1 ; turn on mech mode supression
         } else {
             selectDirection('center', false);
             document.getElementById("output").style.display = "none";
-            document.getElementById("placementDebug").style.display = "none"; 
+            const placementDebugEl = document.getElementById("placementDebug");
+            if (placementDebugEl) placementDebugEl.style.display = "none"; 
             document.getElementById("fileValidationStatus").style.display = "none";
             (DOM.generateBtn || document.getElementById("generateBtn")).disabled = true; 
         }
@@ -2925,8 +3203,10 @@ M975 S1 ; turn on mech mode supression
                 showStatus("outputReady", "success");
                 
                 setTimeout(() => updateProgress(0), 500);
-                outputEl.scrollIntoView({ behavior: 'smooth' });
-                outputEl.scrollIntoView({ behavior: 'smooth' });
+                // Scroll to output box after a short delay to ensure it's visible
+                setTimeout(() => {
+                    outputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
                 
             } catch (error) {
                 setLoadingState(false);
@@ -3922,7 +4202,10 @@ M975 S1 ; turn on mech mode supression
             showStatus("outputReady", "success");
             
             setTimeout(() => updateProgress(0), 500);
-            outputEl.scrollIntoView({ behavior: 'smooth' });
+            // Scroll to output box after a short delay to ensure it's visible
+            setTimeout(() => {
+                outputEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
             
         } catch (error) {
             setLoadingState(false);
@@ -4481,25 +4764,31 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
             // Three push lanes: Center (model center), Left (center - 30mm), Right (center + 30mm)
             // Push order: Center first (main force), then Left, then Right (for stability)
             
+            // Get push-off speed from input
+            const pushSpeedInput = document.getElementById("pushSpeedInput");
+            const pushSpeed = pushSpeedInput ? (parseFloat(pushSpeedInput.value) || DEFAULT_PUSH_SPEED) : DEFAULT_PUSH_SPEED;
+            const validatedPushSpeed = Math.max(MIN_PUSH_SPEED, Math.min(MAX_PUSH_SPEED, pushSpeed));
+            
             const MULTI_LANE_PUSH_REPLACEMENT = `G1 X${xStart} Y254 F600		; move nozzle a little to the side for safety
 M400				; Wait all motion done
 ; --- DYNAMIC MULTI-LANE PUSH SYSTEM (Looprint) ---
 ; Model center calculated from G-code: X${xCenter}
 ; Left lane: X${xLeft} (center - 30mm), Right lane: X${xRight} (center + 30mm)
+; Push-off speed: ${validatedPushSpeed}mm/min
 
 ; --- PUSH LANE 1: CENTER (Primary push force at model center) ---
 G1 X${xCenter} Y230 F1200 	; take start position at model center
-G1 X${xCenter} Y5 F300		; Push center lane (pushed to Y5 for maximum clearance)
+G1 X${xCenter} Y5 F${validatedPushSpeed}		; Push center lane (pushed to Y5 for maximum clearance)
 G1 Y230 F5000               ; Retract back for safety
 
 ; --- PUSH LANE 2: LEFT (30mm left of center for stability) ---
 G1 X${xLeft} Y230 F1200 	; take start position at left lane
-G1 X${xLeft} Y5 F300		; Push left lane (pushed to Y5 for maximum clearance)
+G1 X${xLeft} Y5 F${validatedPushSpeed}		; Push left lane (pushed to Y5 for maximum clearance)
 G1 Y230 F5000               ; Retract back for safety
 
 ; --- PUSH LANE 3: RIGHT (30mm right of center for stability) ---
 G1 X${xRight} Y230 F1200 	; take start position at right lane
-G1 X${xRight} Y5 F300		; Push right lane (pushed to Y5 for maximum clearance)
+G1 X${xRight} Y5 F${validatedPushSpeed}		; Push right lane (pushed to Y5 for maximum clearance)
 G1 Y230 F5000               ; Retract back for safety
 `; 
 
@@ -4511,6 +4800,37 @@ G1 Y230 F5000               ; Retract back for safety
                      : code.substring(safetyClearStartIdx + SAFETY_CLEAR_START.length); 
                  
                  code = prePush + MULTI_LANE_PUSH_REPLACEMENT + postSafetyClear;
+            }
+
+            // Add full bed sweep if enabled
+            const enableSweep = document.getElementById("enableSweep");
+            if (enableSweep && enableSweep.checked) {
+                const sweepSpeedInput = document.getElementById("sweepSpeedInput");
+                const sweepZInput = document.getElementById("sweepZInput");
+                const speed = sweepSpeedInput ? (parseFloat(sweepSpeedInput.value) || DEFAULT_SWEEP_SPEED) : DEFAULT_SWEEP_SPEED;
+                const zHeight = sweepZInput ? (parseFloat(sweepZInput.value) || DEFAULT_SWEEP_Z) : DEFAULT_SWEEP_Z;
+                
+                // Insert sweep after push-off, before final reset parameters
+                // Find the position after the multi-lane push (after "Retract back for safety" from right lane)
+                const sweepGcode = generateSweepGcode(zHeight, speed);
+                
+                // Insert sweep after the push system
+                // Look for the end of the right lane push (last "Retract back for safety")
+                const rightLaneEnd = code.indexOf("; Retract back for safety", code.indexOf("; --- PUSH LANE 3: RIGHT"));
+                if (rightLaneEnd !== -1) {
+                    // Find the end of that line
+                    const lineEnd = code.indexOf('\n', rightLaneEnd);
+                    if (lineEnd !== -1) {
+                        // Insert sweep after the push system
+                        code = code.substring(0, lineEnd + 1) + '\n' + sweepGcode + code.substring(lineEnd + 1);
+                    } else {
+                        // Fallback: append at end before final reset
+                        code = code + '\n' + sweepGcode;
+                    }
+                } else {
+                    // Fallback: append at end before final reset
+                    code = code + '\n' + sweepGcode;
+                }
             }
 
             code = `;===== ${currentDirection.toUpperCase()} PRESET (Offset: ${offset}mm, Temp: ${temp}C, DYNAMIC MULTI-LANE PUSH: Center=${xCenter}, Left=${xLeft}, Right=${xRight}) =====\n` + code;
@@ -4735,11 +5055,11 @@ G1 Y230 F5000               ; Retract back for safety
                 180, 220, 220
             ); 
                 
-            // LEFT (40mm separation): X30, X70
+            // LEFT (40mm separation): Safe X positions (min 10mm to avoid filament cutter)
             currentDirection = 'left';
             document.getElementById("endLeftCode").value = getEndCode(off, temp, 
-                36, 
-                30, 70, 70
+                Math.max(BED_MIN_X, 36), 
+                Math.max(BED_MIN_X, 30), Math.max(BED_MIN_X, 50), Math.max(BED_MIN_X, 70)
             );
         }
             
@@ -4954,10 +5274,11 @@ Generate test file?`;
                     xCenter = 200;
                     xRight = 220;
                 } else { // left
-                    xStart = 36;
-                    xLeft = 30;
-                    xCenter = 50;
-                    xRight = 70;
+                    // Ensure all X positions are within safe boundaries (min 10mm to avoid filament cutter)
+                    xStart = Math.max(BED_MIN_X, 36);
+                    xLeft = Math.max(BED_MIN_X, 30);
+                    xCenter = Math.max(BED_MIN_X, 50);
+                    xRight = Math.max(BED_MIN_X, 70);
                 }
             }
 
@@ -5038,7 +5359,28 @@ Generate test file?`;
             G1 X${xRight} Y230 F1200 ; Take start position at right lane (X=${xRight}, center + 30mm)
             G1 X${xRight} Y5 F300 ; Push right lane (slowly, pushed to Y5 for maximum clearance)
             G1 Y230 F5000 ; Retract back for safety
+`;
 
+            // Get push-off speed from input and replace F300 in test code
+            const pushSpeedInput = document.getElementById("pushSpeedInput");
+            const pushSpeed = pushSpeedInput ? (parseFloat(pushSpeedInput.value) || DEFAULT_PUSH_SPEED) : DEFAULT_PUSH_SPEED;
+            const validatedPushSpeed = Math.max(MIN_PUSH_SPEED, Math.min(MAX_PUSH_SPEED, pushSpeed));
+            
+            // Replace all F300 in push-off sequences with the validated speed
+            const testCodeWithSpeed = testCode.replace(/Y5 F300/g, `Y5 F${validatedPushSpeed}`);
+
+            // Add sweep if enabled
+            let sweepGcode = '';
+            const enableSweep = document.getElementById("enableSweep");
+            if (enableSweep && enableSweep.checked) {
+                const sweepSpeedInput = document.getElementById("sweepSpeedInput");
+                const sweepZInput = document.getElementById("sweepZInput");
+                const speed = sweepSpeedInput ? (parseFloat(sweepSpeedInput.value) || DEFAULT_SWEEP_SPEED) : DEFAULT_SWEEP_SPEED;
+                const zHeight = sweepZInput ? (parseFloat(sweepZInput.value) || DEFAULT_SWEEP_Z) : DEFAULT_SWEEP_Z;
+                sweepGcode = generateSweepGcode(zHeight, speed);
+            }
+
+            const testCodeFinal = testCodeWithSpeed + sweepGcode + `
 ; Return to safe position
 G1 X65 Y245 F12000 ; Return to safe position
 G1 Y265 F3000
@@ -5049,7 +5391,7 @@ M30 ; End of program
 `;
 
             // Download the test file (with memory leak protection)
-            const blob = new Blob([testCode], { type: 'text/plain' });
+            const blob = new Blob([testCodeFinal], { type: 'text/plain' });
             let url = null;
             try {
                 url = URL.createObjectURL(blob);
@@ -5074,6 +5416,88 @@ M30 ; End of program
         } catch (error) {
             if (DEBUG_MODE) console.error("Error in generateTestFile:", error);
             alert("Error generating test file: " + error.message);
+        }
+    }
+    
+    /**
+     * Generates a simple test file with only sweep sequence (no temperature, no cooldown, no push-off)
+     * Fast test to verify sweep functionality
+     */
+    function generateSweepTestFile() {
+        try {
+            // Get sweep settings from inputs
+            const sweepSpeedInput = document.getElementById("sweepSpeedInput");
+            const sweepZInput = document.getElementById("sweepZInput");
+            const speed = sweepSpeedInput ? (parseFloat(sweepSpeedInput.value) || DEFAULT_SWEEP_SPEED) : DEFAULT_SWEEP_SPEED;
+            const zHeight = sweepZInput ? (parseFloat(sweepZInput.value) || DEFAULT_SWEEP_Z) : DEFAULT_SWEEP_Z;
+            
+            // Validate inputs
+            const validatedSpeed = Math.max(MIN_SWEEP_SPEED, Math.min(MAX_SWEEP_SPEED, speed));
+            const validatedZ = Math.max(MIN_SWEEP_Z, Math.min(MAX_SWEEP_Z, zHeight));
+            
+            // Generate sweep G-code
+            const sweepGcode = generateSweepGcode(validatedZ, validatedSpeed);
+            
+            if (!sweepGcode) {
+                alert("Error: Could not generate sweep G-code. Please check settings.");
+                return;
+            }
+            
+            // Create minimal test file - just initialization, sweep, and end
+            const testCode = `; Sweep Test File (Looprint)
+; This file tests ONLY the sweep sequence
+; No temperature, no cooldown, no push-off
+; Sweep Z height: ${validatedZ.toFixed(1)}mm
+; Sweep speed: ${validatedSpeed}mm/min
+
+; Initialize printer
+G28 ; Home all axes
+G90 ; Absolute positioning
+G21 ; Set units to millimeters
+
+; Move to safe position
+G1 X${BED_MIN_X} Y256 Z${validatedZ.toFixed(1)} F5000 ; Move to start position (safe left position, back, at sweep height)
+M400 ; Wait for motion to complete
+
+; === SWEEP SEQUENCE ===
+${sweepGcode}
+
+; Return to safe position
+G1 Z10 F600 ; Lift up
+M400 ; Wait for all motion to complete
+G1 X${BED_MIN_X} Y10 F12000 ; Return to safe left position at front (avoids filament cutter)
+M400 ; Wait for all motion to complete
+
+; End
+M30 ; End of program
+`;
+
+            // Download the test file
+            const blob = new Blob([testCode], { type: 'text/plain' });
+            let url = null;
+            try {
+                url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `sweep_test_${validatedZ.toFixed(1)}mm_${validatedSpeed}mmmin.gcode`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                // Clean up URL after a delay
+                setTimeout(() => {
+                    if (url) URL.revokeObjectURL(url);
+                }, 100);
+                
+                showStatus("Sweep test file generated successfully!", "success");
+            } catch (downloadError) {
+                if (DEBUG_MODE) console.error("Error downloading sweep test file:", downloadError);
+                alert("Error downloading file. Please try again.");
+                if (url) URL.revokeObjectURL(url);
+            }
+        } catch (error) {
+            if (DEBUG_MODE) console.error("Error in generateSweepTestFile:", error);
+            alert("Error generating sweep test file: " + error.message);
         }
     }
     
