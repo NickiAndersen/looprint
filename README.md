@@ -107,7 +107,7 @@ Enable via ⚙️ **Show Advanced Settings**
 
 #### Safety Confirmation (required)
 You must confirm that:
-- The model is sliced with **Skirt or Brim**
+- The model is sliced with **Brim**
 - The model is placed at the **edge of the bed**
 
 ### 4. Generate and download
@@ -149,7 +149,7 @@ After push-off, the hotend moves to a safe X position to avoid collisions.
 ## Important Safety Reminders ⚠️
 
 - Always test with a simple model first
-- **Skirt or Brim is mandatory**
+- **Brim is mandatory**
 - **Model must be placed at the edge of the bed**
 - **G-code must be printed from SD card**
 - For 3MF: **do not re-slice after generation**
