@@ -550,7 +550,7 @@
         <div class="checkbox-container">
             <input type="checkbox" id="skirtConfirmed">
             <label for="skirtConfirmed">
-                <span data-lang="safetyText">I confirm this file was sliced with a Brim enabled.</span>
+                <span data-lang="safetyText">I confirm this file was sliced with Brim enabled.</span>
             </label>
         </div>
         
@@ -755,7 +755,7 @@
             Looprint loops your file and adds push-off sequences between loops. All print settings (temperatures, speeds, etc.) come from your original file. Start and end code are added automatically for all file types (G-code and 3MF). Logic based on <a href="https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">Factorian Designs</a> G-code templates. I recommend watching his video about this.
         </div>
         <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--text); margin: 0; padding: 5px 0 0; font-weight: 600;">Nicki Andersen</p>
-        <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--muted); margin: 0; padding: 2px 0 0;">(v2.0 Beta)</p>
+        <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--muted); margin: 0; padding: 2px 0 0;">(v2.0 Beta - G-code Auto Start/End Code)</p>
     </div>
 </div>
 
@@ -867,7 +867,7 @@
                                     <li>Warning shown if manually changed from auto-detected direction</li>
                                 </ul>
                             </li>
-                            <li><strong>Safety confirmation:</strong> Checkbox to confirm your model was sliced with Skirt or Brim and placed at the edge of the bed (required before generating)</li>
+                            <li><strong>Safety confirmation:</strong> Checkbox to confirm your model was sliced with Brim and placed at the edge of the bed (required before generating)</li>
                         </ul>
                     </li>
                     <li>
@@ -919,7 +919,7 @@
                 <h3>Important Safety Reminders</h3>
                 <ul>
                     <li><strong>Always test with a simple model first</strong> - Verify the push-off sequence works correctly</li>
-                    <li><strong>Use Skirt or Brim</strong> - Your model must be sliced with Skirt or Brim enabled</li>
+                    <li><strong>Use Brim</strong> - Your model must be sliced with Brim enabled</li>
                     <li><strong>Place model at edge</strong> - Position your model at the edge of the bed for proper ejection</li>
                     <li><strong>G-code files:</strong> Must be printed from SD card (required)</li>
                     <li><strong>3MF files:</strong> After generating, open the downloaded 3MF file in Bambu Studio and click "Print Plate" (do not slice again)</li>
@@ -945,7 +945,7 @@
                 <ul>
                     <li><strong>File won't upload:</strong> Ensure it's a valid G-code (.gcode, .gco, .g, .txt) or 3MF (.3mf) file</li>
                     <li><strong>Wrong placement detected:</strong> Check that your model is clearly on one side of the bed. You can manually change push direction in advanced settings if needed</li>
-                    <li><strong>Push-off doesn't work:</strong> Verify Skirt/Brim is enabled and model is at bed edge. Use "Generate Test File" to test push-off sequence</li>
+                    <li><strong>Push-off doesn't work:</strong> Verify Brim is enabled and model is at bed edge. Use "Generate Test File" to test push-off sequence</li>
                     <li><strong>Temperature issues:</strong> All temperatures come from your original file - check your slicer settings. Start code automatically extracts and uses correct temperatures</li>
                     <li><strong>File too large:</strong> Large files may take longer to process - be patient. Progress bar shows processing status</li>
                     <li><strong>Too many loops warning:</strong> If you set more than 100 loops, you'll get a warning. Recommended maximum is 50 loops</li>
@@ -1337,7 +1337,7 @@ M975 S1 ; turn on mech mode supression
             validationWarning: "✓ Push direction is automatically detected from model placement.", validationError: "Validation failed: Could not read or parse the file. Please ensure it is a valid G-code or 3MF file.",
             validationErrorLooprint: "Validation failed: This file has already been processed by Looprint. Please upload the original sliced file.",
             validationErrorParse: "Validation failed: Could not read or parse the file content. Ensure it is a valid G-code or 3MF file.",
-            validationSuccess: "File verified: Valid G-code or 3MF file detected. Start and end code will be added automatically.", step2Title: "2. Loop Configuration", loopsLabel: "Number of loops", safetyText: "I confirm this file was sliced with Skirt or Brim enabled, and the model is placed at the edge of the bed.",
+            validationSuccess: "File verified: Valid G-code or 3MF file detected. Start and end code will be added automatically.", step2Title: "2. Loop Configuration", loopsLabel: "Number of loops", safetyText: "I confirm this file was sliced with Brim enabled, and the model is placed at the edge of the bed.",
             safetyHelp: "", generateBtn: "Generate Loop File", generateTestBtn: "Generate Test File", resetBtn: "Reset to Defaults", 
             outputReady: "Loop File Ready", outputDesc: "Your file has been looped into a single file with push-off sequences between each loop.", statLabelSource: "Source file:", statLabelLoops: "Total loops:",
             statLabelFilament: "Est. Filament usage:", statLabelTime: "Est. Total Print Time:", timeCooldownNote: "(estimate calculated with 60min cooldown per loop)", statLabelFileSize: "Est. File size:", statLabelPushDirection: "Push direction:", statLabelBedTemp: "Target Bed Temp:", statLabelPushOffset: "Z Push Offset:", downloadBtn: "Download Looped File",             footerText: "<strong>⚠️ Safety reminder:</strong> Always test with a simple model first. Print from SD card.",
@@ -1351,7 +1351,7 @@ M975 S1 ; turn on mech mode supression
             zOffsetErrorRange: "Offset must be between 5 mm and 120 mm.", zOffsetApplied: "Offset updated.", selectDirectionLabel: "Selected Push Direction:",
             optLeft: "Left", optCenter: "Center", optRight: "Right", endCenterTitle: "Center Push End G-code", endCenterDesc: "Pushes model from center zone towards front. Z height calculated automatically.",
             endRightTitle: "Right Push End G-code", endRightDesc: "Pushes model from right zone towards front. Z height calculated automatically.", endLeftTitle: "Left Push End G-code", endLeftDesc: "Pushes model from left zone towards front. Z height calculated automatically.",
-            copyBtn: "Copy G-code", fileError: "Please select a G-code or 3MF file.", loopsError: "Please enter a valid loop count (at least 1).", loopsTooManyError: "Too many loops. Maximum recommended: 100. Large files may cause memory issues.", skirtError: "Safety check failed: You must confirm that Skirt or Brim was enabled and the model is placed at the edge of the bed.",
+            copyBtn: "Copy G-code", fileError: "Please select a G-code or 3MF file.", loopsError: "Please enter a valid loop count (at least 1).", loopsTooManyError: "Too many loops. Maximum recommended: 100. Large files may cause memory issues.", skirtError: "Safety check failed: You must confirm that Brim was enabled and the model is placed at the edge of the bed.",
             fileEmptyError: "The uploaded file appears to be empty or unreadable.", copySuccess: "Copied!", copyError: "Failed to copy.", bedPreviewTitle: "Bed Preview & Model Placement",
             bedPreviewText: "The zone with the green border is the selected push direction. In advanced mode, you can click any zone to change it after file upload.", bedPreviewFront: "FRONT", bedPreviewBack: "BACK", bedPreviewLeft: "LEFT", bedPreviewRight: "RIGHT",
             bedZoneCenter: "Center", bedZoneRight: "Right", bedZoneLeft: "Left", bedPreviewOffsetLabel: "Z push offset:", bedPreviewOffsetSuffix: "below top of print",
