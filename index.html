@@ -1353,6 +1353,7 @@ M975 S1 ; turn on mech mode supression
     
     // File size limits
     const MAX_FILE_SIZE = 150 * 1024 * 1024; // 150MB
+    const MAX_GENERATED_FILE_SIZE = 1000 * 1024 * 1024; // 1GB limit for generated files
     
     // Full bed sweep settings (always 7 passes with automatic spacing)
     const DEFAULT_SWEEP_SPEED = 300;  // Default sweep speed (mm/min)
@@ -3204,8 +3205,8 @@ M400 ; Wait for all motion to complete
                         finalFileContent = new Blob(blobParts, { type: 'text/plain' });
                         
                         // Check blob size
-                        if (finalFileContent.size > 1000 * 1024 * 1024) { // 1GB limit
-                            throw new Error("Generated file is too large (>1GB). Please reduce number of loops.");
+                        if (finalFileContent.size > MAX_GENERATED_FILE_SIZE) {
+                            throw new Error(`Generated file is too large (>${(MAX_GENERATED_FILE_SIZE / 1024 / 1024).toFixed(0)}MB). Please reduce number of loops.`);
                         }
                     } else {
                         // For smaller files, use string (faster and simpler)
