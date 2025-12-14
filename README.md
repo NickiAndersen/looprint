@@ -174,7 +174,7 @@ After push-off, the hotend moves to a safe X position to avoid collisions.
 - Manual override available in advanced settings
 
 ### Push-off doesn't work
-- Verify Skirt/Brim is enabled
+- Verify Brim is enabled
 - Model must be at bed edge
 - Use **Generate Test File**
 
