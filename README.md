@@ -1,4 +1,4 @@
-# Looprint (Beta)
+# LOOPRINT (Beta)
 
 **Automated multi-loop printing for Bambu Lab P1 / P1S**
 
