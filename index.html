@@ -2819,6 +2819,9 @@ M400 ; Wait for all motion to complete
         const defaultTemp = DEFAULT_TEMP; 
         const defaultOffset = DEFAULT_OFFSET;
         const defaultPushLaneOffset = DEFAULT_PUSH_LANE_OFFSET;
+        const defaultPushSpeed = DEFAULT_PUSH_SPEED;
+        const defaultSweepSpeed = DEFAULT_SWEEP_SPEED;
+        const defaultSweepZ = DEFAULT_SWEEP_Z;
         
         const fileInput = DOM.fileInput || document.getElementById("fileInput");
         const loopCountEl = DOM.loopCount || document.getElementById("loopCount");
@@ -2834,6 +2837,29 @@ M400 ; Wait for all motion to complete
             pushLaneOffsetInput.value = defaultPushLaneOffset;
         }
         
+        // Reset Push-off Speed to default
+        const pushSpeedInput = document.getElementById("pushSpeedInput");
+        if (pushSpeedInput) {
+            pushSpeedInput.value = defaultPushSpeed;
+        }
+        
+        // Reset Full Bed Sweep settings to default
+        const enableSweep = document.getElementById("enableSweep");
+        if (enableSweep) {
+            enableSweep.checked = false;
+        }
+        const sweepSpeedInput = document.getElementById("sweepSpeedInput");
+        if (sweepSpeedInput) {
+            sweepSpeedInput.value = defaultSweepSpeed;
+        }
+        const sweepZInput = document.getElementById("sweepZInput");
+        if (sweepZInput) {
+            sweepZInput.value = defaultSweepZ;
+        }
+        
+        // Update sweep settings visibility
+        toggleSweepSettings();
+        
         document.getElementById("bedPreviewContainer").classList.remove('locked');
 
         currentOffset = defaultOffset;
@@ -2844,6 +2870,10 @@ M400 ; Wait for all motion to complete
             localStorage.removeItem('looprint_temp');
             localStorage.removeItem('looprint_offset');
             localStorage.removeItem('looprint_pushLaneOffset');
+            localStorage.removeItem('looprint_pushSpeed');
+            localStorage.removeItem('looprint_enableSweep');
+            localStorage.removeItem('looprint_sweepSpeed');
+            localStorage.removeItem('looprint_sweepZ');
         } catch (e) {
             // localStorage might not be available (e.g., private browsing mode)
             // This is handled gracefully
