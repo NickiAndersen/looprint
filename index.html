@@ -41,6 +41,111 @@
             align-items: flex-start; padding-bottom: 14px;
             border-bottom: 1px solid var(--border); margin-bottom: 18px;
         }
+        .language-selector {
+            display: flex; align-items: center; gap: 8px;
+            position: relative;
+            z-index: 1000;
+        }
+        .language-selector-label {
+            font-size: 0.75rem; color: var(--muted);
+            cursor: pointer;
+        }
+        #google_translate_element {
+            display: inline-block !important;
+            position: relative;
+            z-index: 1001;
+            pointer-events: auto;
+            min-width: 140px;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        /* Style Google Translate dropdown */
+        .goog-te-banner-frame {
+            display: none !important;
+        }
+        .goog-te-menu-value {
+            color: var(--text) !important;
+            font-weight: 500 !important;
+        }
+        .goog-te-menu-value span {
+            color: var(--text) !important;
+        }
+        .goog-te-gadget {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+            font-size: 0.9rem !important;
+            display: inline-block !important;
+            visibility: visible !important;
+        }
+        .goog-te-gadget-simple {
+            background-color: var(--input) !important;
+            border: 1px solid var(--border) !important;
+            border-radius: 8px !important;
+            padding: 6px 12px !important;
+            color: var(--text) !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            transition: all 0.2s ease !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+        }
+        .goog-te-gadget-simple:hover {
+            background-color: var(--card) !important;
+            border-color: var(--accent) !important;
+            box-shadow: 0 4px 8px rgba(46, 160, 67, 0.2) !important;
+        }
+        .goog-te-gadget-simple .goog-te-menu-value {
+            color: var(--text) !important;
+            cursor: pointer !important;
+            pointer-events: auto !important;
+            font-weight: 500 !important;
+        }
+        .goog-te-gadget-simple .goog-te-menu-value span {
+            pointer-events: auto !important;
+        }
+        .goog-te-gadget-icon {
+            display: none !important;
+        }
+        .goog-te-menu-frame {
+            z-index: 1002 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3) !important;
+            background-color: #161b22 !important;
+        }
+        .goog-te-menu2 {
+            background-color: #161b22 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 8px !important;
+        }
+        .goog-te-menu2-item {
+            color: #c9d1d9 !important;
+            padding: 8px 12px !important;
+            background-color: #161b22 !important;
+        }
+        .goog-te-menu2-item:hover {
+            background-color: #21262d !important;
+        }
+        .goog-te-menu2-item-selected {
+            background-color: #21262d !important;
+        }
+        .goog-te-menu2-item div {
+            color: #c9d1d9 !important;
+            background-color: transparent !important;
+        }
+        .goog-te-menu2-item div div {
+            color: #c9d1d9 !important;
+            background-color: transparent !important;
+        }
+        .goog-te-menu2-item td {
+            background-color: #161b22 !important;
+        }
+        .goog-te-menu2-item:hover td {
+            background-color: #21262d !important;
+        }
+        .goog-te-menu-frame iframe {
+            background-color: #161b22 !important;
+        }
+        body {
+            top: 0 !important;
+        }
         h1 { margin: 0 0 6px; font-size: 1.7rem; color: var(--accent); letter-spacing: 0.02em; }
         .subtitle { margin: 0; color: var(--muted); font-size: 0.9rem; max-width: 520px; }
         .badge {
@@ -97,13 +202,13 @@
         button.primary {
             flex: 2; padding: 11px 12px;
             border-radius: 999px; border: none; font-size: 1rem;
-            font-weight: 600; cursor: pointer;
+            font-weight: bold; cursor: pointer;
             background: linear-gradient(135deg, var(--accent), var(--accent-soft));
             color: #06090f;
-            box-shadow: 0 8px 18px rgba(46, 160, 67, 0.35);
+            box-shadow: 0 4px 6px rgba(46, 160, 67, 0.35);
             transition: all 0.2s ease;
         }
-        button.primary:hover { filter: brightness(1.05); transform: translateY(-1px); }
+        button.primary:hover { filter: brightness(1.05); transform: translateY(-2px); box-shadow: 0 10px 20px rgba(46, 160, 67, 0.45); }
         button.primary:active { transform: translateY(0); }
         button.primary:disabled {
             background: var(--input); color: var(--muted);
@@ -634,22 +739,27 @@
             color: var(--accent);
         }
         .instructions-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            padding: 6px 12px;
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-soft));
+            color: #06090f;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
+            border: none;
             text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-weight: bold;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(46, 160, 67, 0.35);
         }
         .instructions-btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
+            filter: brightness(1.05);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(46, 160, 67, 0.45);
+        }
+        .instructions-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(46, 160, 67, 0.35);
         }
 
         /* --- DONATION BUTTON STYLES --- */
@@ -694,15 +804,20 @@
 <body>
 <div class="container">
     <div class="header-row">
-        <div>
+        <div style="flex: 1;">
             <h1 data-lang="title">Looprint (Beta)</h1>
             <p class="subtitle" data-lang="subtitle">
                 Automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, and A1. Supports G-code and 3MF files.
             </p>
         </div>
-        <button class="instructions-btn" onclick="openInstructions()" title="View instructions">
-            📖 Instructions
-        </button>
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="language-selector">
+                <div id="google_translate_element"></div>
+            </div>
+            <button class="instructions-btn" onclick="openInstructions()" title="View instructions">
+                📖 Instructions
+            </button>
+        </div>
     </div>
     
     <!-- Quick Start Guide -->
@@ -10039,6 +10154,31 @@ M30 ; End of program
             closeInstructions();
         }
     }
+    // Google Translate Widget
+    function googleTranslateElementInit() {
+        if (typeof google !== 'undefined' && google.translate) {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'da,de,es,fr,it,nl,no,pl,pt,ru,sv,zh-CN,ja,ko',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        } else {
+            console.error('Google Translate API not loaded');
+        }
+    }
+    
+    // Ensure Google Translate loads after page is ready
+    window.addEventListener('load', function() {
+        if (typeof google === 'undefined' || !google.translate) {
+            // Retry loading if not already loaded
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+            document.body.appendChild(script);
+        }
+    });
 </script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
