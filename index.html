@@ -807,7 +807,7 @@
         <div style="flex: 1;">
             <h1 data-lang="title">Looprint (Beta)</h1>
             <p class="subtitle" data-lang="subtitle">
-                Automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, and A1. Supports G-code and 3MF files.
+                Automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, A1, and A1 Mini. Supports G-code and 3MF files.
             </p>
         </div>
         <div style="display: flex; align-items: center; gap: 12px;">
@@ -839,7 +839,7 @@
             </div>
         </div>
         <p style="margin-top: 16px; margin-bottom: 0; font-size: 0.9rem; color: var(--muted);">
-            <strong>⚠️ Beta Notice:</strong> Looprint is still in beta. Do not leave your printer unattended — always stay nearby and monitor the process during automated looping.
+            <strong>⚠️ Beta Notice:</strong> Looprint is still in beta. Not all features have been tested on hardware. Do not leave your printer unattended — always stay nearby and monitor the process during automated looping.
         </p>
     </div>
 
@@ -915,6 +915,7 @@
                     <option value="">Select printer model...</option>
                     <option value="P1">P1 / P1S</option>
                     <option value="A1">A1</option>
+                    <option value="A1Mini">A1 Mini</option>
                     <option value="x1">X1 / X1C</option>
                 </select>
                 <small id="autoDetectedPrinterNote" style="display: none; color: var(--accent); margin-top: 6px; font-size: 0.75rem; font-weight: 600;">
@@ -1119,11 +1120,11 @@
             <textarea id="endRightCode" class="code-textarea" readonly></textarea>
         </div>
         
-        <!-- A1 End G-code Section (shown only when A1 is selected) -->
+        <!-- A1 / A1 Mini End G-code Section (shown only when A1 or A1Mini is selected) -->
         <div id="block-a1" class="code-section" style="display: none; margin-top: 20px;">
             <div class="code-header">
-                <div class="code-title">A1 End G-code</div>
-                <p class="code-desc">A1-specific end code with Y-axis push-off and wiggle sweep. Z height calculated automatically using Factorian's 41mm rule.</p>
+                <div class="code-title">A1 / A1 Mini End G-code</div>
+                <p class="code-desc">A1/A1 Mini-specific end code with Y-axis push-off and wiggle sweep. Z height calculated automatically using Factorian's 41mm rule.</p>
             </div>
             <div class="code-actions"><button type="button" class="btn-pill" onclick="copyCode('endA1Code')" data-lang="copyBtn">Copy G-code</button></div>
             <textarea id="endA1Code" class="code-textarea" readonly></textarea>
@@ -1207,7 +1208,7 @@
             <div class="instructions-section">
                 <h3>What is Looprint?</h3>
                 <p>
-                    Looprint is an automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, and A1 printers. It takes your sliced G-code or 3MF file and automatically creates multiple print loops with push-off sequences between each loop, allowing you to print multiple copies of your model automatically.
+                    Looprint is an automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, A1, and A1 Mini printers. It takes your sliced G-code or 3MF file and automatically creates multiple print loops with push-off sequences between each loop, allowing you to print multiple copies of your model automatically.
                 </p>
                 <p id="factorianLinkInstructions">
                     <strong>Logic based on <a href="https://factoriandesigns.com/" target="_blank" rel="noopener noreferrer" style="color: var(--accent);">Factorian Designs</a> G-code templates.</strong> I recommend watching his videos: <a href="https://factoriandesigns.com/print-automation-bambu-lab-a1-a1-mini" target="_blank" rel="noopener noreferrer" style="color: var(--accent);" id="factorianLinkInstructionsAnchorA1">A1/A1 Mini</a> or <a href="https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2" target="_blank" rel="noopener noreferrer" style="color: var(--accent);" id="factorianLinkInstructionsAnchorP1X1">P1/P1S/X1/X1C</a>.
@@ -1277,7 +1278,27 @@
                                 <li>Wiggle sweep (X: -48 to 256mm)</li>
                                 <li>Automatic Y-axis push using Factorian's 41mm rule</li>
                                 <li>Z offset: 40mm below model top (Factorian's rule)</li>
-                                <li>⚠️ Requires 50mm clearance to the left for wiggle sweep</li>
+                                <li>Print head parked at X-48 (no clearance needed)</li>
+                                <li>Automatic printer model detection from 3MF metadata (N2S)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="printer-accordion">
+                    <div class="printer-accordion-header" onclick="toggleAccordion(this)">
+                        <h4>🖨️ A1 Mini (Bed Slinger)</h4>
+                        <span class="printer-accordion-icon">▼</span>
+                    </div>
+                    <div class="printer-accordion-content">
+                        <div class="printer-accordion-inner">
+                            <ul>
+                                <li>Y-axis push (bed moves, gantry stationary) - same as A1</li>
+                                <li>Wiggle sweep (X: -13 to 180mm)</li>
+                                <li>Automatic Y-axis push using Factorian's 41mm rule</li>
+                                <li>Z offset: 40mm below model top (Factorian's rule)</li>
+                                <li>⚠️ <strong>Requires 50mm clearance to the left of the bed for wiggle sweep</strong></li>
+                                <li>Automatic printer model detection from 3MF metadata (N1)</li>
                             </ul>
                         </div>
                     </div>
@@ -1291,7 +1312,7 @@
                         <ul>
                             <li>Supported extensions: <code>.gcode</code>, <code>.gco</code>, <code>.g</code>, <code>.txt</code></li>
                             <li>Must be printed from SD card (required)</li>
-                            <li>Printer model must be selected manually (P1/P1S, X1/X1C, or A1)</li>
+                            <li>Printer model must be selected manually (P1/P1S, X1/X1C, A1, or A1 Mini)</li>
                         </ul>
                     </li>
                     <li><strong class="highlight">3MF files</strong> - Export from Bambu Studio: Dropdown (where "Print Plate" is) → "Export plate sliced file"
@@ -1421,7 +1442,7 @@
                                     <li>Sweep Z Height: Default 1mm (bed level, range: 0.5-50mm)</li>
                                     <li>Always runs with automatic spacing</li>
                                     <li>Respects safe bed boundaries to avoid collisions</li>
-                                    <li><strong class="highlight">A1 Warning:</strong> Requires 50mm clearance to the left of the bed</li>
+                                    <li><strong class="highlight">A1 Mini Warning:</strong> Requires 50mm clearance to the left of the bed (A1 print head is parked further left, no clearance needed)</li>
                                     <li>Can be tested separately with "Generate Sweep Test File" button (appears when enabled)</li>
                                 </ul>
                             </li>
@@ -1541,7 +1562,7 @@
                                 <li><strong>Wiggle sweep:</strong> X-axis wiggle from -48mm to 256mm to clear debris</li>
                             </ul>
                             <p>
-                                <strong>⚠️ Important:</strong> A1 wiggle sweep requires 50mm clearance to the left of the bed. Ensure your model placement allows for this clearance.
+                                <strong>⚠️ Important:</strong> A1 Mini only: Wiggle sweep requires 50mm clearance to the left of the bed. A1 print head is parked further left (X-48), so no clearance needed for A1.
                             </p>
                         </div>
                     </div>
@@ -1557,7 +1578,7 @@
                     <li><strong class="highlight">G-code files:</strong> Must be printed from SD card (required)</li>
                     <li><strong class="highlight">3MF files:</strong> After generating, open the downloaded 3MF file in Bambu Studio and click "Print Plate" (do not slice again)</li>
                     <li><strong>Monitor first print</strong> - Watch the first loop to ensure everything works as expected</li>
-                    <li><strong>A1 users:</strong> Ensure 50mm clearance to the left of the bed for wiggle sweep</li>
+                    <li><strong>A1 Mini users:</strong> Ensure 50mm clearance to the left of the bed for wiggle sweep (A1 print head is parked further left, no clearance needed)</li>
                     <li><strong>P1/P1S/X1/X1C users:</strong> Ensure model placement allows for dynamic push lanes (Left, Center, Right)</li>
                 </ul>
             </div>
@@ -2726,6 +2747,378 @@ G29.4
 G0 E2.2 F800 ; Extrude a little so nozzle is filled for print start you might have to increase this up to E2.5 depending on your filament
 M104 S{nozzle_temperature_initial_layer[initial_extruder]} ; heat up to full temp in first few moves`;
 
+    // A1 Mini Start Code (from Factorian's Start_A1_Mini.txt)
+    const START_CODE_A1_MINI = `;===== machine: A1 mini =========================
+;Made by FactorianDesigns, please completely watch the related Youtube video before you try this out
+;===== date: 20240620 =====================
+
+;===== start to heat heatbead&hotend==========
+M1002 gcode_claim_action : 2
+M1002 set_filament_type:{filament_type[initial_no_support_extruder]}
+M104 S170
+M140 S[bed_temperature_initial_layer_single]
+G392 S0 ;turn off clog detect
+M9833.2
+;=====start printer sound ===================
+M17
+M400 S1
+M1006 S1
+M1006 A0 B0 L100 C37 D10 M100 E37 F10 N100
+M1006 A0 B0 L100 C41 D10 M100 E41 F10 N100
+M1006 A0 B0 L100 C44 D10 M100 E44 F10 N100
+M1006 A0 B10 L100 C0 D10 M100 E0 F10 N100
+M1006 A43 B10 L100 C39 D10 M100 E46 F10 N100
+M1006 A0 B0 L100 C0 D10 M100 E0 F10 N100
+M1006 A0 B0 L100 C39 D10 M100 E43 F10 N100
+M1006 A0 B0 L100 C0 D10 M100 E0 F10 N100
+M1006 A0 B0 L100 C41 D10 M100 E41 F10 N100
+M1006 A0 B0 L100 C44 D10 M100 E44 F10 N100
+M1006 A0 B0 L100 C49 D10 M100 E49 F10 N100
+M1006 A0 B0 L100 C0 D10 M100 E0 F10 N100
+M1006 A44 B10 L100 C39 D10 M100 E48 F10 N100
+M1006 A0 B0 L100 C0 D10 M100 E0 F10 N100
+M1006 A0 B0 L100 C39 D10 M100 E44 F10 N100
+M1006 A0 B0 L100 C0 D10 M100 E0 F10 N100
+M1006 A43 B10 L100 C39 D10 M100 E46 F10 N100
+M1006 W
+M18
+;=====avoid end stop =================
+G91
+G380 S2 Z30 F1200
+G380 S3 Z-20 F1200
+G1 Z5 F1200
+G90
+
+;===== reset machine status =================
+M204 S6000
+
+M630 S0 P0
+G91
+M17 Z0.3 ; lower the z-motor current
+
+G90
+M17 X0.7 Y0.9 Z0.5 ; reset motor current to default
+M960 S5 P1 ; turn on logo lamp
+G90
+M83
+M220 S100 ;Reset Feedrate
+M221 S100 ;Reset Flowrate
+M73.2   R1.0 ;Reset left time magnitude
+;====== cog noise reduction=================
+M982.2 S1 ; turn on cog noise reduction
+
+;===== prepare print temperature and material ==========
+M400
+M18
+M109 S100 H170
+M104 S170
+M400
+M17
+M400
+G28 X
+
+M211 X0 Y0 Z0 ;turn off soft endstop ; turn off soft endstop to prevent protential logic problem
+
+M975 S1 ; turn on
+
+G1 X0.0 F30000
+G1 X-13.5 F3000
+
+M620 M ;enable remap
+M620 S[initial_no_support_extruder]A   ; switch material if AMS exist
+    G392 S0 ;turn on clog detect
+    M1002 gcode_claim_action : 4
+    M400
+    M1002 set_filament_type:UNKNOWN
+    M109 S[nozzle_temperature_initial_layer]
+    M104 S250
+    M400
+    T[initial_no_support_extruder]
+    G1 X-13.5 F3000
+    M400
+    M620.1 E F{filament_max_volumetric_speed[initial_no_support_extruder]/2.4053*60} T{nozzle_temperature_range_high[initial_no_support_extruder]}
+    M109 S250 ;set nozzle to common flush temp
+    M106 P1 S0
+    G92 E0
+    G1 E50 F200
+    M400
+    M1002 set_filament_type:{filament_type[initial_no_support_extruder]}
+    M104 S{nozzle_temperature_range_high[initial_no_support_extruder]}
+    G92 E0
+    G1 E50 F{filament_max_volumetric_speed[initial_no_support_extruder]/2.4053*60}
+    M400
+    M106 P1 S178
+    G92 E0
+    G1 E5 F{filament_max_volumetric_speed[initial_no_support_extruder]/2.4053*60}
+    M109 S{nozzle_temperature_initial_layer[initial_no_support_extruder]-20} ; drop nozzle temp, make filament shink a bit
+    M104 S{nozzle_temperature_initial_layer[initial_no_support_extruder]-40}
+    G92 E0
+    G1 E-0.5 F300
+
+    G1 X0 F30000
+    G1 X-13.5 F3000
+    G1 X0 F30000 ;wipe and shake
+    G1 X-13.5 F3000
+    G1 X0 F12000 ;wipe and shake
+    G1 X0 F30000
+    G1 X-13.5 F3000
+    M109 S{nozzle_temperature_initial_layer[initial_no_support_extruder]-40}
+    G392 S0 ;turn off clog detect
+M621 S[initial_no_support_extruder]A
+
+M400
+M106 P1 S0
+;===== prepare print temperature and material end =====
+
+
+;===== mech mode fast check============================
+M1002 gcode_claim_action : 3
+G0 X25 Y175 F20000 ; find a soft place to home
+;M104 S0
+G28 Z P0 T300; home z with low precision,permit 300deg temperature
+G29.2 S0 ; turn off ABL
+M104 S170
+
+; build plate detect
+M1002 judge_flag build_plate_detect_flag
+M622 S1
+  G39.4
+  M400
+M623
+
+G1 Z5 F3000
+; ++++++++++++ Ab hier Mech Mode, davor leveling +++++++++++
+
+M975 S1
+G1 F30000
+G1 X-1 Y10
+G28 X ; re-home XY
+
+;===== wipe nozzle ===============================
+M1002 gcode_claim_action : 14
+M975 S1
+
+M104 S170 ; set temp down to heatbed acceptable
+M106 S255 ; turn on fan (G28 has turn off fan)
+M211 S; push soft endstop status
+M211 X0 Y0 Z0 ;turn off Z axis endstop
+
+M83
+G1 E-1 F500
+G90
+M83
+
+M109 S170
+M104 S140
+G0 X90 Y-4 F30000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X91 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X92 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X93 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X94 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X95 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X96 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X97 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X98 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X99 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X99 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X99 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X99 F10000
+G380 S3 Z-5 F1200
+G1 Z2 F1200
+G1 X99 F10000
+G380 S3 Z-5 F1200
+
+G1 Z5 F30000
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+G1 X25 Y175 F30000.1 ;Brush material
+G1 Z0.2 F30000.1
+G1 Y185
+G91
+G1 X-30 F30000
+G1 Y-2
+G1 X27
+G1 Y1.5
+G1 X-28
+G1 Y-2
+G1 X30
+G1 Y1.5
+G1 X-30
+G90
+M83
+
+G1 Z5 F3000
+G0 X50 Y175 F20000 ; find a soft place to home
+G28 Z P0 T300; home z with low precision, permit 300deg temperature
+G29.2 S0 ; turn off ABL
+
+G0 X85 Y185 F10000 ;move to exposed steel surface and stop the nozzle
+G0 Z-1.01 F10000
+G91
+
+G2 I1 J0 X2 Y0 F2000.1
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+G2 I1 J0 X2
+G2 I-0.75 J0 X-1.5
+
+G90
+G1 Z5 F30000
+G1 X25 Y175 F30000.1 ;Brush material
+G1 Z0.2 F30000.1
+G1 Y185
+G91
+G1 X-30 F30000
+G1 Y-2
+G1 X27
+G1 Y1.5
+G1 X-28
+G1 Y-2
+G1 X30
+G1 Y1.5
+G1 X-30
+G90
+M83
+
+G1 Z5
+G0 X55 Y175 F20000 ; find a soft place to home
+G28 Z P0 T300; home z with low precision, permit 300deg temperature
+G29.2 S0 ; turn off ABL
+
+G1 Z10
+G1 X85 Y185
+G1 Z-1.01
+G1 X95
+G1 X90
+
+M211 R; pop softend status
+
+M106 S0 ; turn off fan , too noisy
+;===== wipe nozzle end ================================
+
+
+;===== wait heatbed  ====================
+M1002 gcode_claim_action : 2
+M104 S0
+M190 S[bed_temperature_initial_layer_single];set bed temp
+M109 S140
+
+G1 Z5 F3000
+G29.2 S1
+G1 X10 Y10 F20000
+
+;===== bed leveling ==================================
+;M1002 set_flag g29_before_print_flag=1
+M1002 judge_flag g29_before_print_flag
+M622 J1
+    M1002 gcode_claim_action : 1
+    G29 A1 X{first_layer_print_min[0]} Y{first_layer_print_min[1]} I{first_layer_print_size[0]} J{first_layer_print_size[1]}
+    M400
+    M500 ; save cali data
+M623
+;===== bed leveling end ================================
+
+;===== home after wipe mouth============================
+M1002 judge_flag g29_before_print_flag
+M622 J0
+
+    M1002 gcode_claim_action : 13
+    G28 T145
+
+M623
+
+;===== home after wipe mouth end =======================
+
+M975 S1 ; turn on vibration supression
+;===== nozzle load line ===============================
+M975 S1
+G90
+M83
+T1000
+
+G1 X-13.5 Y0 Z10 F10000
+G1 E1.2 F500
+M400
+M1002 set_filament_type:UNKNOWN
+;M109 S{nozzle_temperature[initial_extruder]}
+M400
+
+M412 S1 ;    ===turn on  filament runout detection===
+M400 P10
+
+G392 S0 ;turn on clog detect
+
+M620.3 W1; === turn on filament tangle detection===
+M400 S2
+
+;========turn off light and wait extrude temperature =============
+M1002 gcode_claim_action : 0
+
+M400 ; wait all motion done before implement the emprical L parameters
+
+;===== for Textured PEI Plate , lower the nozzle as the nozzle was touching topmost of the texture when homing ==
+;curr_bed_type={curr_bed_type}
+{if curr_bed_type=="Textured PEI Plate"}
+G29.1 Z{-0.02} ; for Textured PEI Plate
+{endif}
+
+M960 S1 P0 ; turn off laser
+M960 S2 P0 ; turn off laser
+M106 S0 ; turn off fan
+M106 P2 S0 ; turn off big fan
+M106 P3 S0 ; turn off chamber fan
+
+M975 S1 ; turn on mech mode supression
+G90
+M83
+T1000
+
+M211 X0 Y0 Z0 ;turn off soft endstop
+M1007 S1
+
+G0 E1 F800 ;Extrude a little so nozzle is filled for print start you might have to increase this up to E1.3 depending on your filament
+M104 S{nozzle_temperature_initial_layer[initial_extruder]} ; heat up to full temp in first few moves`;
+
     // Bed boundaries (mm) - for placement detection
     const PUSH_LEFT_BOUNDARY = 90;
     const PUSH_RIGHT_BOUNDARY = 166;
@@ -3495,7 +3888,22 @@ M960 S5 P0 ; turn off logo lamp
             poopZoneX: -13,
             wiggleXMin: -48,
             wiggleXMax: 256,
-            zOffsetRule: 40 // max_layer_z - 40
+            zOffsetRule: 40, // max_layer_z - 40
+            requiresClearance: false // Print head parked at X-48, no clearance needed
+        },
+        A1Mini: {
+            name: "A1 Mini",
+            bedBounds: { minX: -13, maxX: 180, minY: 0, maxY: 185 },
+            tempOffset: -4, // Subtract 4°C (same as A1)
+            m190Timeout: true, // Needs loop (same as A1)
+            requiresClogDetection: true, // G392 S0 mandatory (same as A1)
+            pushAxis: "Y", // Bed slinger (same as A1)
+            hasBackTab: false,
+            poopZoneX: -13.5,
+            wiggleXMin: -13,
+            wiggleXMax: 180,
+            zOffsetRule: 40, // max_layer_z - 40 (same as A1)
+            requiresClearance: true // Requires 50mm clearance to the left
         },
         x1: {
             name: "X1/X1C",
@@ -3578,6 +3986,15 @@ M960 S5 P0 ; turn off logo lamp
             throw error;
         }
         if (DEBUG_MODE) console.log(`[FIREWALL] ${functionName}: A1 engine access granted`);
+    }
+    
+    function FIREWALL_A1_A1MINI_ONLY(functionName) {
+        if (currentPrinterModel !== 'A1' && currentPrinterModel !== 'A1Mini') {
+            const error = new Error(`FIREWALL VIOLATION: ${functionName} is A1/A1Mini-only but called with model: ${currentPrinterModel}`);
+            if (DEBUG_MODE) console.error('[FIREWALL]', error.message);
+            throw error;
+        }
+        if (DEBUG_MODE) console.log(`[FIREWALL] ${functionName}: ${currentPrinterModel} engine access granted`);
     }
     
     function FIREWALL_X1_ONLY(functionName) {
@@ -3831,6 +4248,10 @@ M960 S5 P0 ; turn off logo lamp
                 return generateA1WiggleSweep(zHeight, speed);
             }
             
+            if (currentPrinterModel === 'A1Mini') {
+                return generateA1MiniWiggleSweep(zHeight, speed);
+            }
+            
             // LOGIC FIREWALL: P1/X1 path - validate we're actually P1 or X1
             FIREWALL_P1_X1_ONLY('generateSweepGcode');
             
@@ -3926,8 +4347,8 @@ M400 ; Wait for all motion to complete
         const directionWarning = DOM.directionWarning || document.getElementById("directionWarning");
         const directionInfo = DOM.directionInfo || document.getElementById("directionInfo");
         
-        // A1 doesn't have push direction - hide info/warning
-        if (currentPrinterModel === 'A1') {
+        // A1/A1Mini doesn't have push direction - hide info/warning
+        if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
             directionWarning.style.display = "none";
             directionInfo.style.display = "none";
             return;
@@ -4235,7 +4656,7 @@ M400 ; Wait for all motion to complete
         window.addEventListener('resize', () => {
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
-                if (currentPrinterModel === 'A1') {
+                if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
                     drawBedPreview();
                 }
             }, 100);
@@ -4770,8 +5191,8 @@ M400 ; Wait for all motion to complete
             pushDirectionStatLine.style.display = "block";
             pushDirectionValEl.style.color = "var(--accent)";
             pushDirectionValEl.style.fontWeight = "bold";
-        } else if (currentPrinterModel === 'A1') {
-            // A1 uses automatic Y-axis push - show status instead of direction
+        } else if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+            // A1/A1Mini use automatic Y-axis push - show status instead of direction
             pushDirectionValEl.textContent = "Automatic Y-axis";
             pushDirectionStatLine.style.display = "block";
             pushDirectionValEl.style.color = "var(--accent)";
@@ -5114,6 +5535,8 @@ M400 ; Wait for all motion to complete
                                         (modelId.includes('X1') && !modelId.includes('P1'))) {
                                         detectedPrinterModel = 'x1';
                                         if (DEBUG_MODE) console.log("Detected X1 from printer_model_id");
+                                    } else if (modelId === 'N1' || (modelId.includes('A1Mini') || modelId.includes('A1 Mini'))) {
+                                        detectedPrinterModel = 'A1Mini';
                                     } else if (modelId === 'N2S' || modelId.includes('A1')) {
                                         detectedPrinterModel = 'A1';
                                         if (DEBUG_MODE) console.log("Detected A1 from printer_model_id");
@@ -5300,6 +5723,8 @@ M400 ; Wait for all motion to complete
                                         (modelId.includes('X1') && !modelId.includes('P1'))) {
                                         detectedPrinterModel = 'x1';
                                         if (DEBUG_MODE) console.log("Detected X1 from printer_model_id");
+                                    } else if (modelId === 'N1' || (modelId.includes('A1Mini') || modelId.includes('A1 Mini'))) {
+                                        detectedPrinterModel = 'A1Mini';
                                     } else if (modelId === 'N2S' || modelId.includes('A1')) {
                                         detectedPrinterModel = 'A1';
                                         if (DEBUG_MODE) console.log("Detected A1 from printer_model_id");
@@ -5863,8 +6288,8 @@ M400 ; Wait for all motion to complete
                 
                 const endCodeVariableValues = extractVariableValues(baseGcode, gcodeConfig);
                 if (DEBUG_MODE) console.log("[DIAG] process3MFFile: Extracted variable values:", Object.keys(endCodeVariableValues));
-                if (currentPrinterModel === 'A1') {
-                    if (DEBUG_MODE) console.log("[DIAG] process3MFFile: A1 - endCodeVariableValues['first_layer_center_no_wipe_tower']:", endCodeVariableValues['first_layer_center_no_wipe_tower']);
+                if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                    if (DEBUG_MODE) console.log("[DIAG] process3MFFile:", currentPrinterModel, "- endCodeVariableValues['first_layer_center_no_wipe_tower']:", endCodeVariableValues['first_layer_center_no_wipe_tower']);
                 }
                 
                 let firstLayerCenterX = '128'; // Default to bed center
@@ -5893,10 +6318,10 @@ M400 ; Wait for all motion to complete
                 activeEndCode = activeEndCode.replace(/\{first_layer_center_no_wipe_tower\[0\]\}/g, firstLayerCenterX);
                 activeEndCode = activeEndCode.replace(/\{first_layer_center_no_wipe_tower\[1\]\}/g, firstLayerCenterY);
 
-                // LOGIC FIREWALL: Strict routing - A1 and P1 use completely different end code elements
+                // LOGIC FIREWALL: Strict routing - A1/A1Mini and P1 use completely different end code elements
                 let endCodeElement;
-                if (currentPrinterModel === 'A1') {
-                    FIREWALL_A1_ONLY('process3MFFile: end code selection');
+                if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                    FIREWALL_A1_A1MINI_ONLY('process3MFFile: end code selection');
                     endCodeElement = document.getElementById('endA1Code');
                 } else {
                     // P1/X1: Use direction-based end code elements (both use same push system)
@@ -5920,14 +6345,18 @@ M400 ; Wait for all motion to complete
                 if (!activeEndCode || activeEndCode.trim().length === 0) {
                     if (DEBUG_MODE) console.warn("[DIAG] process3MFFile: End code is empty, generating now for model:", currentPrinterModel);
                     
-                    if (currentPrinterModel === 'A1') {
-                        // Generate A1 end code using current settings
+                    if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                        // Generate A1/A1Mini end code using current settings
                         const temp = getCooldownTemp();
                         const offset = currentOffset;
                         const modelCenterY = calculateModelCenterY();
-                        activeEndCode = getA1EndCode(temp, offset, modelCenterY);
+                        if (currentPrinterModel === 'A1Mini') {
+                            activeEndCode = getA1MiniEndCode(temp, offset, modelCenterY);
+                        } else {
+                            activeEndCode = getA1EndCode(temp, offset, modelCenterY);
+                        }
                         endCodeElement.value = activeEndCode;
-                        if (DEBUG_MODE) console.log("[DIAG] process3MFFile: Generated A1 end code, length:", activeEndCode.length);
+                        if (DEBUG_MODE) console.log("[DIAG] process3MFFile: Generated", currentPrinterModel, "end code, length:", activeEndCode.length);
                     } else {
                         // P1/X1: Generate end code for current direction (X1 uses same push system as P1)
                         // First ensure all P1/X1 end codes are generated
@@ -6976,10 +7405,14 @@ M400 ; Wait for all motion to complete
                             
                             // Check for X1/X1C first (before P1 check, since X1 contains 'X1' which would match P1 check)
                             // X1/X1C uses BL-P001 as printer_model_id (found in actual X1.gcode.3mf file)
-                            if (modelId === 'BL-P001' || modelId === 'C12' || modelId === 'X1' || modelId === 'X1C' || 
+                            if (modelId === 'BL-P001' || modelId === 'BL-P002' || modelId === 'C12' || modelId === 'X1' || modelId === 'X1C' || 
                                 (modelId.includes('X1') && !modelId.includes('P1'))) {
                                 detectedPrinterModel = 'x1';
                                 if (DEBUG_MODE) console.log("Detected X1 from printer_model_id");
+                            } else if (modelId === 'N1' || (modelId.includes('A1Mini') || modelId.includes('A1 Mini'))) {
+                                // A1 Mini uses N1 as printer_model_id (verified from actual A1 mini center test.gcode.3mf file)
+                                detectedPrinterModel = 'A1Mini';
+                                if (DEBUG_MODE) console.log("Detected A1 Mini from printer_model_id");
                             } else if (modelId === 'N2S' || modelId.includes('A1')) {
                                 detectedPrinterModel = 'A1';
                                 if (DEBUG_MODE) console.log("Detected A1 from printer_model_id");
@@ -7011,6 +7444,11 @@ M400 ; Wait for all motion to complete
                                 projectSettingsContent.match(/["']([^"']*X1[^"']*)["']/)) {
                                 detectedPrinterModel = 'x1';
                                 if (DEBUG_MODE) console.log("Detected X1 from project_settings.config");
+                            } else if (projectSettingsContent.includes('@BBL A1 Mini') || 
+                                projectSettingsContent.match(/["']([^"']*A1Mini[^"']*)["']/) ||
+                                projectSettingsContent.match(/["']([^"']*A1 Mini[^"']*)["']/)) {
+                                detectedPrinterModel = 'A1Mini';
+                                if (DEBUG_MODE) console.log("Detected A1 Mini from project_settings.config");
                             } else if (projectSettingsContent.includes('@BBL A1') || 
                                 projectSettingsContent.match(/["']([^"']*A1[^"']*)["']/) ||
                                 projectSettingsContent.match(/;=====\s*A1\s*\d+/i)) {
@@ -7052,6 +7490,10 @@ M400 ; Wait for all motion to complete
                                 headerLines.match(/machine.*X1/i)) {
                                 detectedPrinterModel = 'x1';
                                 if (DEBUG_MODE) console.log("Detected X1 from G-code header");
+                            } else if (headerLines.match(/;=====\s*A1\s*mini\s*\d+/i) || 
+                                (headerLines.includes('A1 mini') || headerLines.includes('A1Mini'))) {
+                                detectedPrinterModel = 'A1Mini';
+                                if (DEBUG_MODE) console.log("Detected A1 Mini from G-code header");
                             } else if (headerLines.match(/;=====\s*A1\s*\d+/i) || 
                                 (headerLines.includes('A1') && headerLines.match(/machine.*A1/i))) {
                                 detectedPrinterModel = 'A1';
@@ -7156,8 +7598,8 @@ M400 ; Wait for all motion to complete
             const gcodeConfigForEnd = gcodeStructure.config || '';
             const endCodeVars = extractVariableValues(gcodeContent, gcodeConfigForEnd);
             if (DEBUG_MODE) console.log("[DIAG] processGcodeFile: Extracted variable values:", Object.keys(endCodeVars));
-            if (currentPrinterModel === 'A1') {
-                if (DEBUG_MODE) console.log("[DIAG] processGcodeFile: A1 - endCodeVars['first_layer_center_no_wipe_tower']:", endCodeVars['first_layer_center_no_wipe_tower']);
+            if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                if (DEBUG_MODE) console.log("[DIAG] processGcodeFile:", currentPrinterModel, "- endCodeVars['first_layer_center_no_wipe_tower']:", endCodeVars['first_layer_center_no_wipe_tower']);
             }
             
             let firstLayerCenterX = '128'; // Default to bed center
@@ -7184,7 +7626,7 @@ M400 ; Wait for all motion to complete
             
             // Get end code - A1 uses different element
             let endCodeElement;
-            if (currentPrinterModel === 'A1') {
+            if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
                 endCodeElement = document.getElementById('endA1Code');
             } else {
                 endCodeElement = document.getElementById(`end${currentDirection.charAt(0).toUpperCase() + currentDirection.slice(1)}Code`);
@@ -7206,14 +7648,18 @@ M400 ; Wait for all motion to complete
             if (!activeEndCode || activeEndCode.trim().length === 0) {
                 if (DEBUG_MODE) console.warn("[DIAG] processGcodeFile: End code is empty, generating now for model:", currentPrinterModel);
                 
-                if (currentPrinterModel === 'A1') {
-                    // Generate A1 end code using current settings
+                if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                    // Generate A1/A1Mini end code using current settings
                     const temp = getCooldownTemp();
                     const offset = currentOffset;
                     const modelCenterY = calculateModelCenterY();
-                    activeEndCode = getA1EndCode(temp, offset, modelCenterY);
+                    if (currentPrinterModel === 'A1Mini') {
+                        activeEndCode = getA1MiniEndCode(temp, offset, modelCenterY);
+                    } else {
+                        activeEndCode = getA1EndCode(temp, offset, modelCenterY);
+                    }
                     endCodeElement.value = activeEndCode;
-                    if (DEBUG_MODE) console.log("[DIAG] processGcodeFile: Generated A1 end code, length:", activeEndCode.length);
+                    if (DEBUG_MODE) console.log("[DIAG] processGcodeFile: Generated", currentPrinterModel, "end code, length:", activeEndCode.length);
                 } else {
                     // P1/X1: Generate end code for current direction (X1 uses same push system as P1)
                     // First ensure all P1/X1 end codes are generated
@@ -7762,10 +8208,11 @@ M400 ; Wait for all motion to complete
                     if (DEBUG_MODE) console.warn("Error calculating dynamic coordinates:", e);
                     dynamicCoords = null;
                 }
-            } else if (currentPrinterModel === 'A1') {
-                // A1 doesn't use push lane offset - just show a message
+            } else if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                // A1/A1Mini don't use push lane offset - just show a message
+                const modelName = (currentPrinterModel === 'A1Mini') ? 'A1 Mini' : 'A1';
                 if (statusEl) {
-                    statusEl.textContent = `A1 uses automatic Y-axis push-off. Push lane offset is not applicable.`;
+                    statusEl.textContent = `${modelName} uses automatic Y-axis push-off. Push lane offset is not applicable.`;
                     statusEl.style.color = "var(--muted)";
                     statusEl.style.display = "block";
                 }
@@ -8129,10 +8576,13 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
      * @returns {string} Generated end code
      */
     /**
-     * Calculates model center Y coordinate from G-code (for A1 push-off)
+     * Calculates model center Y coordinate from G-code (for A1/A1Mini push-off)
      * @returns {number} Model center Y coordinate
      */
     function calculateModelCenterY() {
+        // LOGIC FIREWALL: This function is A1/A1Mini-only (Y-axis push, bed slinger)
+        FIREWALL_A1_A1MINI_ONLY('calculateModelCenterY');
+        
         try {
             if (!lastDebugData) {
                 return 128; // Default to bed center
@@ -8168,11 +8618,11 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
      * @returns {string} A1 push-off G-code
      */
     function generateA1PushGcode() {
-        // LOGIC FIREWALL: This function is A1-only (Y-axis push, bed moves)
-        FIREWALL_A1_ONLY('generateA1PushGcode');
+        // LOGIC FIREWALL: This function is A1/A1Mini-only (Y-axis push, bed moves)
+        FIREWALL_A1_A1MINI_ONLY('generateA1PushGcode');
         
         // Factorian's exact logic from End_A1.txt (lines 175-182):
-        // 1. Auto-Center X: Move nozzle to model center before push (CRITICAL: toolhead at X-48 after cooldown)
+        // 1. Auto-Center X: Move nozzle to model center before push (CRITICAL: toolhead at X-48/X-13 after cooldown)
         //    Note: This alignment is not in End_A1.txt but is necessary to ensure push connects with model
         // 2. Z-Drop Logic (41mm Rule): IF (max_layer_z > 41) THEN Z = max_layer_z - 40 ELSE Z = 1.0
         // 3. M400 P100 wait
@@ -8181,7 +8631,7 @@ M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power
         //       and is already included in getA1EndCode() before cooldown sequence
         
         return `;===== CRITICAL: Align nozzle X-position with model center before push =====
-; After cooldown sequence, toolhead is at X-48. We must move it to model center
+; After cooldown sequence, toolhead is at X-48 (A1) or X-13 (A1 Mini). We must move it to model center
 ; before the bed moves forward (Y-0.5), otherwise the push will miss the model.
 ; (This alignment move is not in End_A1.txt but is critical for push accuracy)
 G0 X{first_layer_center_no_wipe_tower[0]} F12000 ; Align nozzle with model center for push
@@ -8198,13 +8648,13 @@ G0 X{first_layer_center_no_wipe_tower[0]} F12000 ; Align nozzle with model cente
 M400 P100											
 
 ;===== Main Push Movement (Y-axis, bed moves) =====
-; Factorian Speed: F300 (very slow to prevent tipping on moving bed) - End_A1.txt line 182
+; Factorian Speed: F300 (very slow to prevent tipping on moving bed) - End_A1.txt line 182, End_A1_Mini.txt line 186
 G1 Y-0.5 F300		; very slow push off using the x gantry
 ; Note: Factorian's End_A1.txt line 182 has no M400 after push, but we add it for safety
 M400 ; Wait for push to complete before next move
 
 ;======== Push off complete, start safety clear / side push off ======
-G1 Y262 F800	;move bed forward again
+G1 Y${(currentPrinterModel === 'A1Mini') ? 180 : 262} F800	;move bed forward again (A1: Y262, A1 Mini: Y180)
 G1 Z1 F600		;move nozzle closer to the bed when using tall parts`;
     }
 
@@ -8237,6 +8687,39 @@ G1 X-48	F${speed}	;move back to the left
         }
         
         sweepCode += `G1 Y262 F2000	;push bed forward one last time
+`;
+
+        return sweepCode;
+    }
+
+    /**
+     * Generates A1 Mini-specific wiggle sweep pattern
+     * Matches End_A1_Mini.txt lines 192-208 exactly
+     * A1 Mini uses X-13 to X180 (not X-48 to X256 like A1)
+     * @param {number} zHeight - Z height for sweep (NOT USED - Z1 is hardcoded per End_A1_Mini.txt)
+     * @param {number} speed - Speed of sweep motion (mm/min) - F2000 for X-13 movement per End_A1_Mini.txt
+     * @returns {string} Generated A1 Mini wiggle sweep G-code
+     */
+    function generateA1MiniWiggleSweep(zHeight = DEFAULT_SWEEP_Z, speed = DEFAULT_SWEEP_SPEED) {
+        // LOGIC FIREWALL: This function is A1Mini-only (wiggle sweep uses X-13 to X180)
+        FIREWALL_A1_A1MINI_ONLY('generateA1MiniWiggleSweep');
+        
+        // From End_A1_Mini.txt: Z1 is set before sweep (line 190) in generateA1PushGcode(), then sweep happens at different Y positions
+        // Factorian uses Z1 F600 (hardcoded), then the sweep pattern
+        // Note: zHeight parameter is kept for API compatibility but not used (Z1 is always used per End_A1_Mini.txt)
+        const yPositions = [135, 90, 45, 0]; // From End_A1_Mini.txt lines 192-206 (4 positions, not 6 like A1)
+        
+        let sweepCode = ``;
+
+        for (let i = 0; i < yPositions.length; i++) {
+            const yPos = yPositions[i];
+            sweepCode += `G1 Y${yPos} F2000	;move bed back a little
+G1 X180 F800	;move to the right
+G1 X-13	F${speed}	;move back to the left
+`;
+        }
+        
+        sweepCode += `G1 Y185 F2000 ;move bed forward one last time
 `;
 
         return sweepCode;
@@ -8283,6 +8766,7 @@ M104 S0 ; turn off hotend
 
 M400 ; wait all motion done
 M17 S
+M17 Z0.4 ; lower z motor current to reduce impact if there is something in the bottom (End_A1.txt line 100)
 
 M400				;wait for all print moves to be done
 
@@ -8303,8 +8787,6 @@ M140 S0 ; turn off bed
 
 ; Enable travel moves and look at the last layer to see what your printer is doing using this code
 ; YOU NEVER want any -Z values in this or the resulting sliced g-code
-
-M17 Z0.4 ; lower z motor current to reduce impact if there is something in the bottom (End_A1.txt line 100)
 ${generateA1PushGcode()}`;
 
         // Wiggle sweep happens AFTER push-off is complete (End_A1.txt lines 185-213)
@@ -8346,12 +8828,120 @@ M1006 A0 B20 L100 C37 D20 M30 E37 F20 N60
 M1006 W
 ;=====printer finish  sound=========
 
-M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power (End_A1.txt line 250)
+;M17 X0.8 Y0.8 Z0.5 ; lower motor current to 45% power (End_A1.txt line 250 - commented out in Factorian's template)
 M400
-M18 X Y Z ; Disable all motors
+M18 X Y Z
 `;
 
         return `;===== A1 PRESET (Temp: ${temp}°C actual: ${actualTemp}°C, Y-axis push-off) =====\n` + code;
+    }
+
+    /**
+     * Generates A1 Mini end code with Y-axis push-off and wiggle sweep
+     * A1 Mini uses same push logic as A1 but different bed bounds and wiggle sweep range
+     */
+    function getA1MiniEndCode(temp, offset, modelCenterY) {
+        // LOGIC FIREWALL: This function is A1Mini-only (Y-axis push, bed slinger)
+        FIREWALL_A1_A1MINI_ONLY('getA1MiniEndCode');
+        
+        const actualTemp = applyTempOffset(temp);
+        const m190Loop = generateM190Command(temp);
+        
+        let code = `;===== date: 20231229 =====================
+;Made by FactorianDesigns, please completely watch the related Youtube video before you try this out
+
+;turn off nozzle clog detect
+G392 S0
+
+M400 ; wait for buffer to clear
+G92 E0 ; zero the extruder
+G1 E-0.8 F1800 ; retract
+G1 Z{max_layer_z + 0.5} F900 ; lower z a little
+G1 X0 Y{first_layer_center_no_wipe_tower[1]} F18000 ; move to safe pos
+G1 X-13.0 F3000 ; move to safe pos
+
+M140 S0 ; turn off bed
+M106 S0 ; turn off fan
+M106 P2 S0 ; turn off remote part cooling fan
+M106 P3 S0 ; turn off chamber cooling fan
+
+; pull back filament to AMS
+M620 S255
+G1 X181 F12000
+T255
+G1 X0 F18000
+G1 X-13.0 F3000
+G1 X0 F18000 ; wipe
+M621 S255
+
+M104 S0 ; turn off hotend
+
+M400 ; wait all motion done
+M17 S
+M17 Z0.4 ; lower z motor current to reduce impact if there is something in the bottom
+
+G90
+G1 X-13 Y185 F3600 ; move to safe limit position on the left
+
+;======= Start Cool Down =============
+
+${m190Loop}
+
+M140 S0 ; turn off bed
+				
+;======= Cool Down Done, Start Push Off =============
+; calculate a good z-pushoff height, BE CAREFUL this could be a little different for parts
+; that are fragile in the top, parts below 32 mm heigth can't be pushed off using the gantry
+; if your part is too small then use the extruder head for push off and comment out the line "G1 Y1 F300"
+; Use the safety clear part as pushoff template and adjust the coordinates as you see fit for you part 
+
+; Enable travel moves and look at the last layer to see what your printer is doing using this code
+; YOU NEVER want any -Z values in this or the resulting sliced g-code
+
+${generateA1PushGcode()}`;
+
+        // Wiggle sweep happens AFTER push-off is complete (End_A1_Mini.txt lines 188-208)
+        // A1 Mini wiggle sweep is ALWAYS active (not optional like P1's Full Bed Sweep)
+        // Use Factorian's exact values: Z1 (set before sweep), speed F2000 for X-13 movement (End_A1_Mini.txt line 194)
+        const sweepZInput = document.getElementById("sweepZInput");
+        const zHeight = sweepZInput ? (parseFloat(sweepZInput.value) || DEFAULT_SWEEP_Z) : DEFAULT_SWEEP_Z;
+        // A1 Mini wiggle sweep uses fixed speed F2000 for X-13 movement (not configurable, per End_A1_Mini.txt)
+        code += '\n' + generateA1MiniWiggleSweep(zHeight, 2000);
+        
+        code += `;====== Safety clear complete =======
+M17 R ; restore z current
+M220 S100  ; Reset feedrate magnitude
+M201.2 K1.0 ; Reset acc magnitude
+M73.2   R1.0 ;Reset left time magnitude
+M1002 set_gcode_claim_speed_level : 0
+
+;=====printer finish  sound=========
+M17
+M400 S1
+M1006 S1
+M1006 A0 B20 L100 C37 D20 M100 E42 F20 N100
+M1006 A0 B10 L100 C44 D10 M100 E44 F10 N100
+M1006 A0 B10 L100 C46 D10 M100 E46 F10 N100
+M1006 A44 B20 L100 C39 D20 M100 E48 F20 N100
+M1006 A0 B10 L100 C44 D10 M100 E44 F10 N100
+M1006 A0 B10 L100 C0 D10 M100 E0 F10 N100
+M1006 A0 B10 L100 C39 D10 M100 E39 F10 N100
+M1006 A0 B10 L100 C0 D10 M100 E0 F10 N100
+M1006 A0 B10 L100 C44 D10 M100 E44 F10 N100
+M1006 A0 B10 L100 C0 D10 M100 E0 F10 N100
+M1006 A0 B10 L100 C39 D10 M100 E39 F10 N100
+M1006 A0 B10 L100 C0 D10 M100 E0 F10 N100
+M1006 A44 B10 L100 C0 D10 M100 E48 F10 N100
+M1006 A0 B10 L100 C0 D10 M100 E0 F10 N100
+M1006 A44 B20 L100 C41 D20 M100 E49 F20 N100
+M1006 A0 B20 L100 C0 D20 M100 E0 F20 N100
+M1006 A0 B20 L100 C37 D20 M100 E37 F20 N100
+M1006 W
+;=====printer finish  sound=========
+M400 S1
+M18 X Y Z`;
+
+        return `;===== A1 Mini PRESET (Temp: ${temp}°C actual: ${actualTemp}°C, Y-axis push-off) =====\n` + code;
     }
 
     /**
@@ -8359,6 +8949,9 @@ M18 X Y Z ; Disable all motors
      * Three push lanes: Center (model center), Left (center - 30mm), Right (center + 30mm)
      */
     function generatePushGcode(xStart, xLeft, xCenter, xRight) {
+        // LOGIC FIREWALL: This function is P1/X1-only (X-axis multi-lane push, not Y-axis bed slinger)
+        FIREWALL_P1_X1_ONLY('generatePushGcode');
+        
         const pushSpeedInput = document.getElementById("pushSpeedInput");
         const pushSpeed = pushSpeedInput ? (parseFloat(pushSpeedInput.value) || DEFAULT_PUSH_SPEED) : DEFAULT_PUSH_SPEED;
         const validatedPushSpeed = Math.max(MIN_PUSH_SPEED, Math.min(MAX_PUSH_SPEED, pushSpeed));
@@ -8491,12 +9084,16 @@ M400 P100
             if (DEBUG_MODE) console.log("[DIAG] getEndCode: Called for printer model:", currentPrinterModel);
             if (DEBUG_MODE) console.log("[DIAG] getEndCode: Input parameters:", { offset, temp, xStart, xLeft, xCenter, xRight });
             
-            // LOGIC FIREWALL: Strict routing - A1 must use getA1EndCode, never fall through to P1 logic
-            if (currentPrinterModel === 'A1') {
-                if (DEBUG_MODE) console.log("[DIAG] getEndCode: A1 detected, delegating to getA1EndCode()");
+            // LOGIC FIREWALL: Strict routing - A1/A1Mini must use getA1EndCode/getA1MiniEndCode, never fall through to P1 logic
+            if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                if (DEBUG_MODE) console.log(`[DIAG] getEndCode: ${currentPrinterModel} detected, delegating to getA1EndCode() or getA1MiniEndCode()`);
                 const modelCenterY = calculateModelCenterY();
-                if (DEBUG_MODE) console.log("[DIAG] getEndCode: A1 modelCenterY:", modelCenterY);
-                return getA1EndCode(temp, offset, modelCenterY);
+                if (DEBUG_MODE) console.log(`[DIAG] getEndCode: ${currentPrinterModel} modelCenterY:`, modelCenterY);
+                if (currentPrinterModel === 'A1Mini') {
+                    return getA1MiniEndCode(temp, offset, modelCenterY);
+                } else {
+                    return getA1EndCode(temp, offset, modelCenterY);
+                }
             }
             
             // X1 uses same push logic as P1 but different end code structure
@@ -8864,6 +9461,14 @@ M400 P100
             const pushLaneOffsetStatus = document.getElementById('pushLaneOffsetStatus');
             const pushLaneOffsetMaxInfo = document.getElementById('pushLaneOffsetMaxInfo');
             
+            // Push Speed (P1/X1 specific - A1/A1Mini uses hardcoded F300 per Factorian's template)
+            const pushSpeedInput = document.getElementById('pushSpeedInput');
+            const pushSpeedCol = pushSpeedInput ? pushSpeedInput.closest('.col') : null;
+            
+            // Z Push Offset (P1/X1 specific - A1/A1Mini uses 41mm rule with hardcoded 40mm offset)
+            const zOffsetInput = document.getElementById('zOffsetInput');
+            const zOffsetCol = zOffsetInput ? zOffsetInput.closest('.col') : null;
+            
             // Enable Full Bed Sweep (P1/X1 specific - A1 uses Wiggle Sweep which is always active)
             const enableSweepCheckbox = document.getElementById('enableSweep');
             const enableSweepContainer = enableSweepCheckbox ? enableSweepCheckbox.closest('.setting-block') : null;
@@ -8873,8 +9478,8 @@ M400 P100
             const bedPreviewP1 = document.getElementById('bedPreviewP1');
             const bedPreviewCanvas = document.getElementById('bedPreviewCanvas');
             
-            if (currentPrinterModel === 'A1') {
-                // Hide P1/X1 push direction controls (A1 uses automatic Y-axis push only)
+            if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                // Hide P1/X1 push direction controls (A1/A1Mini uses automatic Y-axis push only)
                 if (pushSelectorLabel) pushSelectorLabel.style.display = 'none';
                 if (pushSelector) pushSelector.style.display = 'none';
                 if (blockLeft) blockLeft.style.display = 'none';
@@ -8885,12 +9490,18 @@ M400 P100
                 const blockA1 = document.getElementById('block-a1');
                 if (blockA1) blockA1.style.display = 'block';
                 
-                // Hide Push Lane Offset column (A1 uses single centered Y-axis push, not multi-lane X-axis push)
+                // Hide Push Lane Offset column (A1/A1Mini uses single centered Y-axis push, not multi-lane X-axis push)
                 if (pushLaneOffsetCol) pushLaneOffsetCol.style.display = 'none';
                 if (pushLaneOffsetStatus) pushLaneOffsetStatus.style.display = 'none';
                 if (pushLaneOffsetMaxInfo) pushLaneOffsetMaxInfo.style.display = 'none';
                 
-                // Hide Full Bed Sweep checkbox (A1 uses Wiggle Sweep which is always active in end code)
+                // Hide Push Speed column (A1/A1Mini uses hardcoded F300 per Factorian's template - End_A1.txt line 182, End_A1_Mini.txt line 186)
+                if (pushSpeedCol) pushSpeedCol.style.display = 'none';
+                
+                // Hide Z Push Offset column (A1/A1Mini uses 41mm rule with hardcoded 40mm offset - End_A1.txt lines 175-179, End_A1_Mini.txt lines 179-183)
+                if (zOffsetCol) zOffsetCol.style.display = 'none';
+                
+                // Hide Full Bed Sweep checkbox (A1/A1Mini uses Wiggle Sweep which is always active in end code)
                 if (enableSweepContainer) enableSweepContainer.style.display = 'none';
                 if (sweepSettings) sweepSettings.style.display = 'none';
                 
@@ -8912,6 +9523,12 @@ M400 P100
                 // Show Push Lane Offset column (P1 and X1 both use multi-lane X-axis push)
                 if (pushLaneOffsetCol) pushLaneOffsetCol.style.display = '';
                 
+                // Show Push Speed column (P1 and X1 both use configurable push speed)
+                if (pushSpeedCol) pushSpeedCol.style.display = '';
+                
+                // Show Z Push Offset column (P1 and X1 both use configurable Z offset - default 30mm)
+                if (zOffsetCol) zOffsetCol.style.display = '';
+                
                 // Show Full Bed Sweep checkbox (P1 and X1 both support full bed sweep)
                 if (enableSweepContainer) enableSweepContainer.style.display = '';
                 // sweepSettings visibility is controlled by toggleSweepSettings()
@@ -8931,8 +9548,9 @@ M400 P100
             // Update endSectionHelp text based on printer model
             const endSectionHelp = document.querySelector('[data-lang="endSectionHelp"]');
             if (endSectionHelp) {
-                if (currentPrinterModel === 'A1') {
-                    endSectionHelp.innerHTML = 'A1 uses <strong>automatic Y-axis push-off</strong> (bed moves forward). Push direction is not configurable.<br><span style="font-size: 0.85em; color: var(--muted);">The sweep sequence is always active and runs automatically after each push-off.</span>';
+                if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                    const modelName = (currentPrinterModel === 'A1Mini') ? 'A1 Mini' : 'A1';
+                    endSectionHelp.innerHTML = `${modelName} uses <strong>automatic Y-axis push-off</strong> (bed moves forward). Push direction is not configurable.<br><span style="font-size: 0.85em; color: var(--muted);">The sweep sequence is always active and runs automatically after each push-off.</span>`;
                 } else {
                     endSectionHelp.innerHTML = 'Push direction is automatically detected from your file. <strong>You can click the zones in the bed preview above to change it manually.</strong><br><span style="font-size: 0.85em; color: var(--muted);">Note: In simple mode, push direction is locked to the auto-detected value. In advanced mode, you can change it but will see a warning if it differs from the auto-detected direction.</span>';
                 }
@@ -8984,7 +9602,7 @@ M400 P100
             return;
         }
         
-        if (currentPrinterModel === 'A1') {
+        if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
             // Show canvas, hide P1 zones
             if (bedPreviewP1) bedPreviewP1.style.display = 'none';
             if (bedPreviewCanvas) {
@@ -8993,10 +9611,18 @@ M400 P100
             }
             // Update text
             if (bedPreviewModeText) {
-                bedPreviewModeText.innerHTML = 'The <strong style="color: var(--accent);">green border</strong> shows the active print area. The <strong style="color: var(--danger);">red zone</strong> indicates the overhang area requiring clearance.<br><span style="font-size: 0.85em; color: var(--danger);">⚠️ Requires 50mm+ clearance to the left of printer</span>';
+                if (currentPrinterModel === 'A1Mini') {
+                    bedPreviewModeText.innerHTML = 'The <strong style="color: var(--accent);">green border</strong> shows the active print area (X0 to X180). Print head parks at X-13 after each print (parking position). Wiggle sweep extends to X-13.<br><span style="font-size: 0.85em; color: var(--danger);">⚠️ A1 Mini requires 50mm+ clearance to the left of the printer for wiggle sweep (shown in red zone).</span>';
+                } else {
+                    bedPreviewModeText.innerHTML = 'The <strong style="color: var(--accent);">green border</strong> shows the active print area (X0 to X256). Print head parks at X-48 after each print (parking position). Wiggle sweep extends to X-48.<br><span style="font-size: 0.85em; color: var(--muted);">ℹ️ A1 print head is parked at X-48 (no clearance needed). A1 Mini users should ensure 50mm+ clearance to the left.</span>';
+                }
             }
             if (sweepModeText) {
-                sweepModeText.textContent = '(Full-width wiggle sweep: X256 → X-48)';
+                if (currentPrinterModel === 'A1Mini') {
+                    sweepModeText.textContent = '(Full-width wiggle sweep: X180 → X-13)';
+                } else {
+                    sweepModeText.textContent = '(Full-width wiggle sweep: X256 → X-48)';
+                }
             }
         } else {
             // Show P1/X1 zones (both use same push system), hide canvas
@@ -9077,11 +9703,24 @@ M400 P100
         }
         ctx.clip();
         
-        // Coordinate system: A1 bed is 256mm wide (X: 0-256), but wiggle extends to X-48
-        // Visual representation: Show extended range from -48 to 256
-        const totalVisualWidth = 256 + 48; // 304mm total (48mm warning zone + 256mm active plate)
-        const warningZoneWidth = Math.floor((48 / totalVisualWidth) * width); // Left portion for warning zone
-        const activePlateWidth = Math.floor((256 / totalVisualWidth) * width); // Right portion for active plate
+        // Coordinate system: Get bed bounds from PRINTER_MODELS
+        const bedBounds = PRINTER_MODELS[currentPrinterModel]?.bedBounds || PRINTER_MODELS.A1.bedBounds;
+        const bedMinX = bedBounds.minX || -48; // A1: -48, A1 Mini: -13
+        const bedMaxX = bedBounds.maxX || 256; // A1: 256, A1 Mini: 180
+        const bedMaxY = bedBounds.maxY || 262; // A1: 262, A1 Mini: 185
+        
+        // Visual representation: Show extended range
+        // For A1 Mini: Show 50mm clearance zone (not just 13mm to X0)
+        // For A1: Show 48mm info zone (parking position)
+        const requiresClearance = PRINTER_MODELS[currentPrinterModel]?.requiresClearance || false;
+        const clearanceZoneWidth = requiresClearance ? 50 : Math.abs(bedMinX); // A1 Mini: 50mm, A1: 48mm
+        const totalVisualWidth = bedMaxX + clearanceZoneWidth; // Total visual width (A1 Mini: 180+50=230, A1: 256+48=304)
+        const warningZoneWidth = Math.floor((clearanceZoneWidth / totalVisualWidth) * width); // Left portion for warning/info zone
+        
+        if (DEBUG_MODE && requiresClearance) {
+            console.log(`[DIAG] drawBedPreview A1 Mini: clearanceZoneWidth=${clearanceZoneWidth}mm, bedMaxX=${bedMaxX}mm, totalVisualWidth=${totalVisualWidth}mm, warningZoneWidth=${warningZoneWidth}px (${(warningZoneWidth/width*100).toFixed(1)}% of ${width}px)`);
+        }
+        const activePlateWidth = Math.floor((bedMaxX / totalVisualWidth) * width); // Right portion for active plate
         const activePlateStartX = warningZoneWidth;
         
         // Ensure all coordinates are within bounds (with padding for borders)
@@ -9111,31 +9750,59 @@ M400 P100
             ctx.stroke();
         }
         
-        // Draw WARNING ZONE (X-48 to X0) - Subtle solid fill
-        // Ensure warning zone stays within bounds
-        const warningZoneSafeWidth = Math.min(warningZoneWidth, safeWidth);
-        ctx.fillStyle = 'rgba(255, 50, 50, 0.15)'; // Very light transparent red
-        ctx.fillRect(safeX, safeY, warningZoneSafeWidth, safeHeight);
+        // Draw CLEARANCE/INFO AREA - Warning zone for A1 Mini (50mm), Info zone for A1 (48mm)
+        // A1 Mini requires 50mm clearance to the left of the bed (red warning zone)
+        // A1 print head is parked at X-48 (gray info zone, no clearance needed)
+        // Ensure area stays within bounds
+        const extendedAreaSafeWidth = Math.min(warningZoneWidth, safeWidth);
+        if (requiresClearance) {
+            // A1 Mini: Red warning zone (requires 50mm clearance to the left of the bed)
+            // Make it more visible than A1's gray info zone
+            ctx.fillStyle = 'rgba(255, 50, 50, 0.25)'; // More visible red (increased from 0.15)
+            ctx.fillRect(safeX, safeY, extendedAreaSafeWidth, safeHeight);
+            
+            // Draw warning zone border - thicker, more visible red line
+            ctx.strokeStyle = 'rgba(255, 50, 50, 0.8)'; // More visible red (increased from 0.6)
+            ctx.lineWidth = 2; // Thicker border (increased from 1)
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(safeX + 0.5, safeY + 0.5, extendedAreaSafeWidth - 1, safeHeight - 1);
+            ctx.setLineDash([]);
+            
+            // Draw warning label (show clearance requirement, not X coordinate)
+            ctx.save();
+            ctx.translate(safeX + extendedAreaSafeWidth / 2, safeY + safeHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'rgba(255, 50, 50, 0.9)';
+            ctx.font = '11px system-ui';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('50mm+ Clearance', 0, 0);
+            ctx.restore();
+        } else {
+            // A1: Gray info zone (no clearance needed)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)'; // Very subtle gray for info zone
+            ctx.fillRect(safeX, safeY, extendedAreaSafeWidth, safeHeight);
+            
+            // Draw extended area border - thin dashed gray line
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(safeX + 0.5, safeY + 0.5, extendedAreaSafeWidth - 1, safeHeight - 1);
+            ctx.setLineDash([]);
+            
+            // Draw info label
+            ctx.save();
+            ctx.translate(safeX + extendedAreaSafeWidth / 2, safeY + safeHeight / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.font = '11px system-ui';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`X${bedMinX} (Park)`, 0, 0);
+            ctx.restore();
+        }
         
-        // Draw warning zone border - thin dashed red line (inset to stay within bounds)
-        ctx.strokeStyle = 'rgba(255, 50, 50, 0.6)';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        ctx.strokeRect(safeX + 0.5, safeY + 0.5, warningZoneSafeWidth - 1, safeHeight - 1);
-        ctx.setLineDash([]);
-        
-        // Draw warning label - rotated -90 degrees, vertically centered (within safe bounds)
-        ctx.save();
-        ctx.translate(safeX + warningZoneSafeWidth / 2, safeY + safeHeight / 2);
-        ctx.rotate(-Math.PI / 2);
-        ctx.fillStyle = 'rgba(255, 50, 50, 0.9)';
-        ctx.font = '11px system-ui';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('⚠️ Overhang', 0, 0);
-        ctx.restore();
-        
-        // Draw ACTIVE PLATE (X0 to X256) - Neon green with glow
+        // Draw ACTIVE PLATE (X0 to X256/X180) - Neon green with glow
         // Reset shadow for border
         ctx.shadowBlur = 10;
         ctx.shadowColor = '#2ecc71';
@@ -9145,8 +9812,8 @@ M400 P100
         // Draw active plate border - bright neon green (inset to stay within bounds)
         ctx.strokeStyle = '#2ecc71';
         ctx.lineWidth = 2;
-        // Calculate safe plate position (ensure it starts after warning zone and stays within bounds)
-        const plateX = Math.max(safeX + warningZoneSafeWidth, safeX);
+        // Calculate safe plate position (ensure it starts after warning/info zone and stays within bounds)
+        const plateX = Math.max(safeX + extendedAreaSafeWidth, safeX);
         const plateW = Math.min(activePlateWidth, safeWidth - (plateX - safeX));
         ctx.strokeRect(plateX, safeY, plateW, safeHeight);
         
@@ -9166,7 +9833,7 @@ M400 P100
             ctx.strokeStyle = 'rgba(46, 204, 113, 0.6)';
             ctx.lineWidth = 2;
             ctx.setLineDash([6, 4]);
-            // Draw sweep path from X-48 to X256 (full width, inset to stay within bounds)
+            // Draw sweep path from X-48/X-13 to X256/X180 (full width, inset to stay within bounds)
             const sweepY = safeY + safeHeight / 2;
             const margin = 4; // Margin from edges
             ctx.beginPath();
@@ -9216,12 +9883,20 @@ M400 P100
         ctx.font = '8px system-ui';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
-        // X-48 marker (centered in warning zone)
-        ctx.fillText('X-48', safeX + warningZoneSafeWidth / 2, safeY + safeHeight - 10);
-        // X0 marker (boundary between warning zone and active plate)
-        ctx.fillText('X0', safeX + warningZoneSafeWidth, safeY + safeHeight - 10);
-        // X256 marker (end of active plate)
-        ctx.fillText('X256', safeX + safeWidth - 6, safeY + safeHeight - 10);
+        // X0 marker (boundary between warning/info zone and active plate - start of print bed)
+        ctx.fillText('X0', safeX + extendedAreaSafeWidth, safeY + safeHeight - 10);
+        // X marker (end of active plate)
+        ctx.fillText(`X${bedMaxX}`, safeX + safeWidth - 6, safeY + safeHeight - 10);
+        // For A1 Mini: Show X-13 marker (wiggle sweep extends to here) at appropriate position
+        if (requiresClearance) {
+            // Calculate position for X-13 marker (13mm into the 50mm clearance zone from X0)
+            const x13PositionRatio = 13 / clearanceZoneWidth; // Position of X-13 within clearance zone
+            const x13MarkerX = safeX + (extendedAreaSafeWidth * (1 - x13PositionRatio));
+            ctx.fillText('X-13', x13MarkerX, safeY + safeHeight - 10);
+        } else {
+            // A1: Show X-48 marker (parking position)
+            ctx.fillText(`X${bedMinX}`, safeX + extendedAreaSafeWidth / 2, safeY + safeHeight - 10);
+        }
     }
 
     /**
@@ -9234,6 +9909,8 @@ M400 P100
         }
         if (currentPrinterModel === 'A1') {
             return START_CODE_A1;
+        } else if (currentPrinterModel === 'A1Mini') {
+            return START_CODE_A1_MINI;
         } else if (currentPrinterModel === 'x1') {
             // X1: Select template based on purge checkbox
             const purgeEnabled = document.getElementById("purgeEnabled");
@@ -9262,9 +9939,9 @@ M400 P100
      * @returns {number} Actual temperature to write in G-code
      */
     function applyTempOffset(userTemp) {
-        if (currentPrinterModel === 'A1') {
-            const model = PRINTER_MODELS.A1;
-            return Math.max(15, userTemp + model.tempOffset); // tempOffset is -4
+        if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+            const model = PRINTER_MODELS[currentPrinterModel];
+            return Math.max(15, userTemp + model.tempOffset); // tempOffset is -4 for both A1 and A1Mini
         }
         return userTemp;
     }
@@ -9279,15 +9956,23 @@ M400 P100
         const actualTemp = applyTempOffset(temp);
         
         if (currentPrinterModel === 'A1') {
-            // A1: Generate 20 M190 commands to prevent timeout (Factorian uses 20 for A1)
-            const count = 20; // Can be made configurable
+            // A1: Generate 45 M190 commands to prevent timeout (Factorian's End_A1.txt lines 117-161: 45 commands)
+            const count = 45;
+            return Array(count).fill(`M190 S${actualTemp}`).join('\n');
+        } else if (currentPrinterModel === 'A1Mini') {
+            // A1 Mini: Generate 50 M190 commands to prevent timeout (Factorian's End_A1_Mini.txt lines 116-165: 50 commands)
+            const count = 50;
             return Array(count).fill(`M190 S${actualTemp}`).join('\n');
         } else if (currentPrinterModel === 'x1') {
-            // X1: Generate 30 M190 commands (matching Factorian's X1 template exactly)
+            // X1: Generate 30 M190 commands (matching Factorian's X1 template exactly - lines 58-97: 30 commands)
+            const count = 30;
+            return Array(count).fill(`M190 S${actualTemp}`).join('\n');
+        } else if (currentPrinterModel === 'P1') {
+            // P1: Generate 30 M190 commands (matching Factorian's P1 template exactly - lines 57-96: 30 commands)
             const count = 30;
             return Array(count).fill(`M190 S${actualTemp}`).join('\n');
         } else {
-            // P1: Single M190 command (no timeout issue)
+            // Fallback: Single M190 command
             return `M190 S${actualTemp}`;
         }
     }
@@ -9373,8 +10058,8 @@ M400 P100
         const originalDirection = currentDirection;
         
         // LOGIC FIREWALL: Strict routing - A1 must use A1-specific logic, never fall through to P1 logic
-        if (currentPrinterModel === 'A1') {
-            if (DEBUG_MODE) console.log("[DIAG] updateEndCodeTextareas: A1 path - updating A1 end code");
+        if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+            if (DEBUG_MODE) console.log("[DIAG] updateEndCodeTextareas:", currentPrinterModel, "path - updating end code");
             
             // Update A1 end code
             const endA1CodeEl = document.getElementById('endA1Code');
@@ -9383,14 +10068,14 @@ M400 P100
                 return; // Exit early if element doesn't exist
             }
             
-            // Calculate model center Y for A1 (fallback to 128 if not available)
+            // Calculate model center Y for A1/A1Mini (fallback to 128 if not available)
             const modelCenterY = calculateModelCenterY();
-            if (DEBUG_MODE) console.log("[DIAG] updateEndCodeTextareas: A1 modelCenterY:", modelCenterY, "lastDebugData:", lastDebugData);
+            if (DEBUG_MODE) console.log("[DIAG] updateEndCodeTextareas:", currentPrinterModel, "modelCenterY:", modelCenterY, "lastDebugData:", lastDebugData);
             
-            // Generate A1 end code - always generate even if lastDebugData is not available yet
-            const a1EndCode = getA1EndCode(temp, off, modelCenterY);
+            // Generate A1/A1Mini end code - always generate even if lastDebugData is not available yet
+            const a1EndCode = (currentPrinterModel === 'A1Mini') ? getA1MiniEndCode(temp, off, modelCenterY) : getA1EndCode(temp, off, modelCenterY);
             endA1CodeEl.value = a1EndCode;
-            if (DEBUG_MODE) console.log("[DIAG] updateEndCodeTextareas: A1 end code updated, length:", a1EndCode.length);
+            if (DEBUG_MODE) console.log("[DIAG] updateEndCodeTextareas:", currentPrinterModel, "end code updated, length:", a1EndCode.length);
             
             return; // Don't process P1 end codes
         }
@@ -9681,12 +10366,13 @@ Generate test file?`;
                 currentPrinterModel = "P1"; // Default fallback
             }
             
-            // A1 uses Y-axis push (no direction selector needed)
-            if (currentPrinterModel === 'A1') {
-                // A1 doesn't use push direction or lane offset
+            // A1/A1Mini uses Y-axis push (no direction selector needed)
+            if (currentPrinterModel === 'A1' || currentPrinterModel === 'A1Mini') {
+                // A1/A1Mini doesn't use push direction or lane offset
                 // Get model center X and Y from lastDebugData if available
-                let modelCenterX = 128; // Default A1 bed center X
-                let modelCenterY = 128; // Default A1 bed center Y
+                const bedBounds = PRINTER_MODELS[currentPrinterModel]?.bedBounds || PRINTER_MODELS.A1.bedBounds;
+                let modelCenterX = (bedBounds.minX + bedBounds.maxX) / 2; // Default bed center X
+                let modelCenterY = (bedBounds.minY + bedBounds.maxY) / 2; // Default bed center Y
                 if (lastDebugData) {
                     if (lastDebugData.minX !== undefined && lastDebugData.maxX !== undefined) {
                         modelCenterX = (lastDebugData.minX + lastDebugData.maxX) / 2;
@@ -9704,10 +10390,12 @@ Generate test file?`;
                     bedZ = 1.0; // Minimum safe position
                 }
                 
-                // Generate A1 test file with Y-axis push
-                const testCode = `; Test G-code for A1 push-off testing (Y-axis push, bed moves)
+                // Generate A1/A1Mini test file with Y-axis push
+                const modelName = (currentPrinterModel === 'A1Mini') ? 'A1 Mini' : 'A1';
+                const bedMaxY = bedBounds.maxY || 262;
+                const testCode = `; Test G-code for ${modelName} push-off testing (Y-axis push, bed moves)
 ; Model height: ${modelHeight.toFixed(2)}mm (max_layer_z = ${modelHeight.toFixed(2)})
-; Printer: Bambu Lab A1/A1 Mini
+; Printer: Bambu Lab ${modelName}
 ; Push type: Y-axis (bed moves forward)
 ; Model center X: ${modelCenterX.toFixed(2)}mm, Y: ${modelCenterY.toFixed(2)}mm
 ; 
@@ -9726,7 +10414,7 @@ G21 ; Set units to millimeters
 ; CRITICAL STEP 1: Move hotend to safe position AND safe Z height
 ; Move hotend AWAY from print (to safe X/Y position)
 G1 X0 Y${modelCenterY.toFixed(2)} F18000 ; Move to safe X/Y position (away from print)
-G1 X-13.0 F3000 ; Move to safe X position
+G1 X${bedBounds.poopZoneX || -13.0} F3000 ; Move to safe X position (A1: X-13.0, A1 Mini: X-13.5)
 ; CRITICAL: Move hotend UP to safe Z height BEFORE lowering bed
 ; Hotend must be HIGHER than model (${modelHeight.toFixed(2)}mm) + safety margin
 G1 Z${Math.max(150, modelHeight + 20).toFixed(0)} F900 ; Move hotend to safe Z height (above ${modelHeight.toFixed(2)}mm model)
@@ -9745,7 +10433,7 @@ G1 Z${bedZ.toFixed(2)} F600 ; Factorian A1 method: max_layer_z (${modelHeight.to
 M400 ; Wait for motion to complete
 
 ; CRITICAL STEP 3: Align nozzle X-position with model center before push
-; After cooldown, toolhead is at X-48. We must move it to model center
+; After cooldown, toolhead is at X-48 (A1) or X-13 (A1 Mini). We must move it to model center
 ; before the bed moves forward (Y-0.5), otherwise the push will miss the model.
 G0 X${modelCenterX.toFixed(2)} F12000 ; Align nozzle with model center for push
 M400 ; Wait for motion to complete
@@ -9756,12 +10444,12 @@ G1 Y-0.5 F300 ; very slow push off using the bed (Y-axis, bed moves)
 M400 ; Wait for push to complete
 
 ; Return bed to safe position
-G1 Y262 F800 ; move bed forward again
+G1 Y${bedMaxY} F800 ; move bed forward again (A1: Y262, A1 Mini: Y185)
 M400 ; Wait for motion to complete
 
 ; Return to safe position
 G1 X0 Y${modelCenterY.toFixed(2)} F18000 ; Return to safe position
-G1 X-13.0 F3000
+G1 X${bedBounds.poopZoneX || -13.0} F3000
 
 ; End
 M400 ; Wait for all motion to complete
@@ -9776,14 +10464,18 @@ M30 ; End of program
                 // Replace F300 in push-off sequence with the validated speed
                 const testCodeWithSpeed = testCode.replace(/Y-0\.5 F300/g, `Y-0.5 F${validatedPushSpeed}`);
                 
-                // Add A1 wiggle sweep if enabled (A1 sweep is always active, but can be tested separately)
+                // Add A1/A1Mini wiggle sweep if enabled (A1/A1Mini sweep is always active, but can be tested separately)
                 let sweepGcode = '';
                 const sweepZInput = document.getElementById("sweepZInput");
                 const sweepSpeedInput = document.getElementById("sweepSpeedInput");
                 if (sweepZInput && sweepSpeedInput) {
                     const zHeight = parseFloat(sweepZInput.value) || DEFAULT_SWEEP_Z;
                     const speed = parseFloat(sweepSpeedInput.value) || DEFAULT_SWEEP_SPEED;
-                    sweepGcode = generateA1WiggleSweep(zHeight, speed);
+                    if (currentPrinterModel === 'A1Mini') {
+                        sweepGcode = generateA1MiniWiggleSweep(zHeight, speed);
+                    } else {
+                        sweepGcode = generateA1WiggleSweep(zHeight, speed);
+                    }
                 }
                 
                 const testCodeFinal = testCodeWithSpeed.replace('; End', sweepGcode + '\n; End');
@@ -9798,7 +10490,8 @@ M30 ; End of program
                     const originalFilename = is3MF 
                         ? file.name.replace(/\.[^.]*$/, "") 
                         : file.name.replace(/\.(gcode|gco|g|txt)$/i, "") || "test";
-                    a.download = `${originalFilename}_test_pushoff_A1_${modelHeight.toFixed(0)}mm.gcode`;
+                    const printerSuffix = (currentPrinterModel === 'A1Mini') ? 'A1Mini' : 'A1';
+                    a.download = `${originalFilename}_test_pushoff_${printerSuffix}_${modelHeight.toFixed(0)}mm.gcode`;
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
@@ -9983,7 +10676,7 @@ M30 ; End of program
                     ? file.name.replace(/\.[^.]*$/, "") 
                     : file.name.replace(/\.(gcode|gco|g|txt)$/i, "") || "test";
                 // Test files are always G-code format (G-code is extracted from 3MF if needed)
-                const printerSuffix = currentPrinterModel === 'x1' ? 'X1' : (currentPrinterModel === 'A1' ? 'A1' : 'P1');
+                const printerSuffix = currentPrinterModel === 'x1' ? 'X1' : (currentPrinterModel === 'A1Mini' ? 'A1Mini' : (currentPrinterModel === 'A1' ? 'A1' : 'P1'));
                 a.download = `${originalFilename}_test_pushoff_${printerSuffix}_${modelHeight.toFixed(0)}mm.gcode`;
                 document.body.appendChild(a);
                 a.click();
@@ -10041,13 +10734,13 @@ M30 ; End of program
             const bedMinY = bedBounds.minY || 0;
             
             // Get printer name for test file
-            const printerName = currentPrinterModel === 'A1' ? 'A1' : (currentPrinterModel === 'x1' ? 'X1' : 'P1');
+            const printerName = currentPrinterModel === 'A1Mini' ? 'A1Mini' : (currentPrinterModel === 'A1' ? 'A1' : (currentPrinterModel === 'x1' ? 'X1' : 'P1'));
             
             // Create minimal test file - just initialization, sweep, and end
             const testCode = `; Sweep Test File (Looprint)
             ; This file tests ONLY the sweep sequence
             ; No temperature, no cooldown, no push-off
-            ; Printer: Bambu Lab ${printerName === 'A1' ? 'A1/A1 Mini' : (printerName === 'X1' ? 'X1/X1C' : 'P1/P1S')}
+            ; Printer: Bambu Lab ${printerName === 'A1Mini' ? 'A1 Mini' : (printerName === 'A1' ? 'A1' : (printerName === 'X1' ? 'X1/X1C' : 'P1/P1S'))}
             ; Sweep Z height: ${validatedZ.toFixed(1)}mm
             ; Sweep speed: ${validatedSpeed}mm/min
 
