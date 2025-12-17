@@ -16,7 +16,7 @@ No paywalls.
 ## Supported printers
 - **P1 / P1S**
 - **X1 / X1C**
-- **A1**
+- **A1 / A1 Mini**
 
 ---
 
@@ -44,7 +44,7 @@ All printer-specific logic is handled automatically.
 
 ## Important notice ⚠️
 ⚠️ **Beta Notice:** Looprint is still in beta.  
-Do not leave your printer unattended — always stay nearby and monitor the process during automated looping.
+Not all features have been tested on hardware. Do not leave your printer unattended — always stay nearby and monitor the process during automated looping.
 
 ---
 
