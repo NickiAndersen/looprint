@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="logo.png" alt="Looprint Logo" width="200">
+</div>
+
 # Looprint
 
 **Automated multi-loop printing for Bambu Lab printers**
@@ -66,5 +70,5 @@ MIT License
 
 ---
 
-**Created by Nicki Andersen**  
+**Created by Nicki Andersen**
 *Free tool. No subscriptions. No paywalls.*
