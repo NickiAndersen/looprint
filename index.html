@@ -41,6 +41,13 @@
             align-items: flex-start; padding-bottom: 14px;
             border-bottom: 1px solid var(--border); margin-bottom: 18px;
         }
+        .header-logo {
+            height: 48px; width: auto; margin-right: 16px;
+            object-fit: contain;
+        }
+        @media (max-width: 640px) {
+            .header-logo { height: 40px; margin-right: 12px; }
+        }
         .language-selector {
             display: flex; align-items: center; gap: 8px;
             position: relative;
@@ -791,6 +798,7 @@
 
         @media (max-width: 640px) {
             .header-row { flex-direction: column; align-items: flex-start; }
+            .header-row > div:first-child { flex-direction: column; align-items: flex-start; gap: 12px; }
             .instructions-content {
                 padding: 16px;
                 margin-top: 20px;
@@ -804,11 +812,14 @@
 <body>
 <div class="container">
     <div class="header-row">
-        <div style="flex: 1;">
-            <h1 data-lang="title">Looprint (Beta)</h1>
-            <p class="subtitle" data-lang="subtitle">
-                Automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, A1, and A1 Mini. Supports G-code and 3MF files.
-            </p>
+        <div style="flex: 1; display: flex; align-items: center; gap: 16px;">
+            <img src="logo.png" alt="Looprint Logo" class="header-logo">
+            <div style="flex: 1;">
+                <h1 data-lang="title">Looprint (Beta)</h1>
+                <p class="subtitle" data-lang="subtitle">
+                    Automated multi-loop G-code builder for Bambu Lab P1/P1S, X1/X1C, A1, and A1 Mini. Supports G-code and 3MF files.
+                </p>
+            </div>
         </div>
         <div style="display: flex; align-items: center; gap: 12px;">
             <div class="language-selector">
@@ -1179,10 +1190,15 @@
     </div>
 
     <div class="donation-container">
-        <p class="help-text" style="margin-bottom: 8px;">Find this tool useful? Support the project and keep Looprint updated:</p>
-        <a href="https://buymeacoffee.com/nickiandersen" target="_blank" rel="noopener noreferrer" class="donate-btn">
-            ☕ Buy me a coffee
-        </a>
+        <div style="text-align: center; margin-bottom: 12px;">
+            <img src="logo.png" alt="Looprint Logo" style="height: 60px; width: auto; display: block; margin: 0 auto;">
+        </div>
+        <p class="help-text" style="margin-bottom: 8px; text-align: center;">Find this tool useful? Support the project and keep Looprint updated:</p>
+        <div style="text-align: center;">
+            <a href="https://buymeacoffee.com/nickiandersen" target="_blank" rel="noopener noreferrer" class="donate-btn">
+                ☕ Buy me a coffee
+            </a>
+        </div>
     </div>
 
     <div class="footer">
