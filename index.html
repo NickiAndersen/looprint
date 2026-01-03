@@ -106,7 +106,17 @@
             font-weight: 500 !important;
         }
         .goog-te-gadget-simple .goog-te-menu-value span {
+            color: var(--text) !important;
             pointer-events: auto !important;
+        }
+        /* Force text color - target all possible nested elements with direct color value */
+        .goog-te-gadget-simple .goog-te-menu-value,
+        .goog-te-gadget-simple .goog-te-menu-value span,
+        .goog-te-gadget-simple .goog-te-menu-value span[style],
+        .goog-te-menu-value,
+        .goog-te-menu-value span,
+        .goog-te-menu-value span[style] {
+            color: #c9d1d9 !important; /* Direct light gray color for maximum compatibility with inline styles */
         }
         .goog-te-gadget-icon {
             display: none !important;
@@ -1085,6 +1095,26 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div class="setting-block" id="a1NegativeZContainer" style="margin-top: 20px; display: none;">
+            <div class="checkbox-container">
+                <input type="checkbox" id="enableA1NegativeZ" onchange="saveSettings(); updateEndCodeTextareas();">
+                <label for="enableA1NegativeZ">
+                    <span>Enable Negative Z Push-Off</span>
+                </label>
+            </div>
+            <div style="margin-top: 10px; margin-left: 24px; padding: 10px; background: rgba(248, 81, 73, 0.1); border: 1px solid rgba(248, 81, 73, 0.3); border-radius: 6px;">
+                <p style="margin: 0 0 8px 0; font-size: 0.78rem; color: var(--danger); font-weight: 600; line-height: 1.5;">
+                    ⚠️ <strong>WARNING:</strong> This feature uses negative Z values (Z-17) when nozzle head is at X-48 (far left). Only use if you do NOT have a Z-axis stiffener mod installed.
+                </p>
+                <p style="margin: 0; font-size: 0.75rem; color: var(--muted); line-height: 1.5;">
+                    Based on Factorian Designs custom end code logic. Use with caution!
+                </p>
+            </div>
+            <p class="help-text" style="margin-top: 10px; margin-left: 24px; line-height: 1.5;">
+                Adds an additional push-off sequence after standard push-off, using negative Z for low-height models. This is an advanced feature and should only be used when standard push-off is insufficient for very low parts.
+            </p>
         </div>
         <div id="block-start" class="code-section" style="margin-top: 20px;">
             <div class="code-header">
@@ -4174,6 +4204,9 @@ M960 S5 P0 ; turn off logo lamp
         
         if (checkbox.checked) {
             advancedSection.classList.add("advanced-visible");
+            // Update visibility of printer-specific controls (e.g., A1 Negative Z container)
+            // This ensures correct visibility when Advanced Settings opens
+            handlePrinterModelChange();
             // Update start code textarea
             // If file is uploaded, try to get G-code content from file input
             const fileInput = DOM.fileInput || document.getElementById("fileInput");
@@ -4642,6 +4675,13 @@ M400 ; Wait for all motion to complete
                     sweepZInput.value = zHeight;
                 }
             }
+            
+            // Load A1 Negative Z setting
+            const savedEnableA1NegativeZ = localStorage.getItem('looprint_enableA1NegativeZ');
+            const enableA1NegativeZ = document.getElementById('enableA1NegativeZ');
+            if (enableA1NegativeZ && savedEnableA1NegativeZ === 'true') {
+                enableA1NegativeZ.checked = true;
+            }
         } catch (e) {
             // localStorage might not be available (e.g., private browsing mode)
             // This is handled gracefully - defaults will be used
@@ -4775,6 +4815,11 @@ M400 ; Wait for all motion to complete
             }
             if (sweepZInput) {
                 localStorage.setItem('looprint_sweepZ', sweepZInput.value);
+            }
+            // Save A1 Negative Z setting
+            const enableA1NegativeZ = document.getElementById('enableA1NegativeZ');
+            if (enableA1NegativeZ) {
+                localStorage.setItem('looprint_enableA1NegativeZ', enableA1NegativeZ.checked ? 'true' : 'false');
             }
         } catch (e) {
             // localStorage might not be available (e.g., private browsing mode)
@@ -6391,16 +6436,7 @@ M400 ; Wait for all motion to complete
                 
                 // Replace {max_layer_z} with actual value and evaluate conditionals
                 if (maxZHeight !== null && !isNaN(maxZHeight)) {
-                    activeEndCode = activeEndCode.replace(/\{max_layer_z\}/g, maxZHeight.toFixed(2));
-                    activeEndCode = activeEndCode.replace(/\{max_layer_z\s*([+\-])\s*([\d\.]+)\}/g, (match, op, val) => {
-                        const numVal = parseFloat(val);
-                        if (isNaN(numVal)) {
-                            if (DEBUG_MODE) console.error(`Invalid value in expression: ${match}`);
-                            return match;
-                        }
-                        const result = op === '+' ? maxZHeight + numVal : maxZHeight - numVal;
-                        return result.toFixed(2);
-                    });
+                    // CRITICAL: Replace conditional logic FIRST (before variable replacement) to ensure structure is intact
                     // Factorian uses {if (max_layer_z ) > 41} with space - handle both formats
                     activeEndCode = activeEndCode.replace(/\{if\s*\(?\s*max_layer_z\s*\)?\s*>\s*([\d\.]+)\}([\s\S]*?)(?:\{else\}([\s\S]*?))?\{endif\}/g, (match, threshold, ifBlock, elseBlock) => {
                         const thresholdNum = parseFloat(threshold);
@@ -6431,6 +6467,17 @@ M400 ; Wait for all motion to complete
                                                               return result.toFixed(2);
                                                           }).trim() : '';
                         }
+                    });
+                    // Now replace remaining {max_layer_z} variables (outside conditionals)
+                    activeEndCode = activeEndCode.replace(/\{max_layer_z\}/g, maxZHeight.toFixed(2));
+                    activeEndCode = activeEndCode.replace(/\{max_layer_z\s*([+\-])\s*([\d\.]+)\}/g, (match, op, val) => {
+                        const numVal = parseFloat(val);
+                        if (isNaN(numVal)) {
+                            if (DEBUG_MODE) console.error(`Invalid value in expression: ${match}`);
+                            return match;
+                        }
+                        const result = op === '+' ? maxZHeight + numVal : maxZHeight - numVal;
+                        return result.toFixed(2);
                     });
                 } else {
                     // Fallback: Use safe default (50mm) if max_z_height not found
@@ -7698,16 +7745,7 @@ M400 ; Wait for all motion to complete
             
             // Replace {max_layer_z} with actual value and evaluate conditionals
             if (maxZHeight !== null && !isNaN(maxZHeight)) {
-                activeEndCode = activeEndCode.replace(/\{max_layer_z\}/g, maxZHeight.toFixed(2));
-                activeEndCode = activeEndCode.replace(/\{max_layer_z\s*([+\-])\s*([\d\.]+)\}/g, (match, op, val) => {
-                    const numVal = parseFloat(val);
-                    if (isNaN(numVal)) {
-                        if (DEBUG_MODE) console.error(`Invalid value in expression: ${match}`);
-                        return match;
-                    }
-                    const result = op === '+' ? maxZHeight + numVal : maxZHeight - numVal;
-                    return result.toFixed(2);
-                });
+                // CRITICAL: Replace conditional logic FIRST (before variable replacement) to ensure structure is intact
                 // Factorian uses {if (max_layer_z ) > 41} with space - handle both formats
                 activeEndCode = activeEndCode.replace(/\{if\s*\(?\s*max_layer_z\s*\)?\s*>\s*([\d\.]+)\}([\s\S]*?)(?:\{else\}([\s\S]*?))?\{endif\}/g, (match, threshold, ifBlock, elseBlock) => {
                     const thresholdNum = parseFloat(threshold);
@@ -7738,6 +7776,17 @@ M400 ; Wait for all motion to complete
                                                       return result.toFixed(2);
                                                   }).trim() : '';
                     }
+                });
+                // Now replace remaining {max_layer_z} variables (outside conditionals)
+                activeEndCode = activeEndCode.replace(/\{max_layer_z\}/g, maxZHeight.toFixed(2));
+                activeEndCode = activeEndCode.replace(/\{max_layer_z\s*([+\-])\s*([\d\.]+)\}/g, (match, op, val) => {
+                    const numVal = parseFloat(val);
+                    if (isNaN(numVal)) {
+                        if (DEBUG_MODE) console.error(`Invalid value in expression: ${match}`);
+                        return match;
+                    }
+                    const result = op === '+' ? maxZHeight + numVal : maxZHeight - numVal;
+                    return result.toFixed(2);
                 });
             } else {
                 // Fallback: Use safe default (50mm) if max_z_height not found
@@ -8742,6 +8791,37 @@ G1 X-13	F${speed}	;move back to the left
     }
 
     /**
+     * Generates A1 negative Z push-off sequence (advanced feature)
+     * Based on Factorian Designs custom end code from FrilledLizard_single.3mf
+     * Only works when nozzle head is at X-48 (far left)
+     * WARNING: Only for A1 without Z-axis stiffener mod
+     * @returns {string} Negative Z push-off G-code sequence
+     */
+    function generateA1NegativeZSequence() {
+        // LOGIC FIREWALL: This function is A1-only (NOT A1 Mini)
+        FIREWALL_A1_ONLY('generateA1NegativeZSequence');
+        
+        // Factorian's exact sequence from FrilledLizard_single.3mf (lines 208-216):
+        // G1 Z1 F600 ;travel to safe z
+        // G4 S1 ;wait 1 second
+        // G1 Z-17 F600 ;go into negative z be very careful here
+        // M400 P100
+        // G1 Y200 F100 ; part release using the x gantry
+        // G1 Y262 F2000 ; reset position
+        // G1 Z{max_layer_z +5} ; lift Z into positive again
+        return `;===== Negative Z Push-Off Sequence (Advanced - A1 Only) =====
+; WARNING: This uses negative Z values. Only use if you do NOT have Z-axis stiffener mod installed.
+; Nozzle head must be at X-48 (far left) for this to work safely.
+G1 Z1 F600 ;travel to safe z
+G4 S1		;wait 1 second
+G1 Z-17 F600 ;go into negative z be very careful here
+M400 P100											
+G1 Y200 F100			; part release using the x gantry
+G1 Y262 F2000			; reset position
+G1 Z{max_layer_z +5}	; lift Z into positive again dont erase`;
+    }
+    
+    /**
      * Generates A1-specific end code with Y-axis push-off
      */
     function getA1EndCode(temp, offset, modelCenterY) {
@@ -8812,6 +8892,14 @@ ${generateA1PushGcode()}`;
         const zHeight = sweepZInput ? (parseFloat(sweepZInput.value) || DEFAULT_SWEEP_Z) : DEFAULT_SWEEP_Z;
         // A1 wiggle sweep uses fixed speed F2000 for X-48 movement (not configurable, per End_A1.txt)
         code += '\n' + generateA1WiggleSweep(zHeight, 2000);
+        
+        // Negative Z sequence (advanced feature - optional)
+        // Based on Factorian Designs custom end code from FrilledLizard_single.3mf
+        // Only add if enabled by user (checkbox)
+        const enableNegativeZCheckbox = document.getElementById('enableA1NegativeZ');
+        if (enableNegativeZCheckbox && enableNegativeZCheckbox.checked) {
+            code += '\n\n' + generateA1NegativeZSequence();
+        }
         
         code += `;====== Safety clear complete =======
 M17 R ; restore z current
@@ -9490,6 +9578,9 @@ M400 P100
             const enableSweepContainer = enableSweepCheckbox ? enableSweepCheckbox.closest('.setting-block') : null;
             const sweepSettings = document.getElementById('sweepSettings');
             
+            // A1 Negative Z (A1 only - NOT A1 Mini)
+            const a1NegativeZContainer = document.getElementById('a1NegativeZContainer');
+            
             // Bed Preview P1/X1 Zones (P1/X1 specific - replaced by Canvas in A1 mode)
             const bedPreviewP1 = document.getElementById('bedPreviewP1');
             const bedPreviewCanvas = document.getElementById('bedPreviewCanvas');
@@ -9521,6 +9612,11 @@ M400 P100
                 if (enableSweepContainer) enableSweepContainer.style.display = 'none';
                 if (sweepSettings) sweepSettings.style.display = 'none';
                 
+                // Show/hide A1 Negative Z checkbox (A1 ONLY, not A1 Mini)
+                if (a1NegativeZContainer) {
+                    a1NegativeZContainer.style.display = (currentPrinterModel === 'A1') ? 'block' : 'none';
+                }
+                
                 // Hide P1 bed preview zones, show Canvas (handled in updatePreview, but ensure here too)
                 if (bedPreviewP1) bedPreviewP1.style.display = 'none';
                 if (bedPreviewCanvas) bedPreviewCanvas.style.display = 'block';
@@ -9548,6 +9644,9 @@ M400 P100
                 // Show Full Bed Sweep checkbox (P1 and X1 both support full bed sweep)
                 if (enableSweepContainer) enableSweepContainer.style.display = '';
                 // sweepSettings visibility is controlled by toggleSweepSettings()
+                
+                // Hide A1 Negative Z checkbox (P1/X1 don't support this)
+                if (a1NegativeZContainer) a1NegativeZContainer.style.display = 'none';
                 
                 // Show P1/X1 bed preview zones, hide Canvas (handled in updatePreview, but ensure here too)
                 if (bedPreviewP1) bedPreviewP1.style.display = '';
@@ -10863,6 +10962,72 @@ M30 ; End of program
             closeInstructions();
         }
     }
+    // Global observer for Google Translate widget (created once)
+    let translateWidgetObserver = null;
+    
+    // Force styling for Google Translate widget text color
+    function forceTranslateWidgetStyle() {
+        const menuValueElements = document.querySelectorAll('.goog-te-menu-value, .goog-te-menu-value span');
+        menuValueElements.forEach(function(el) {
+            if (el.style) {
+                el.style.color = '#c9d1d9'; // Light gray text
+                el.style.setProperty('color', '#c9d1d9', 'important');
+            }
+        });
+        
+        // Also target the gadget simple container
+        const gadgetSimple = document.querySelector('.goog-te-gadget-simple');
+        if (gadgetSimple) {
+            const textElements = gadgetSimple.querySelectorAll('span, div');
+            textElements.forEach(function(el) {
+                if (el.classList && (el.classList.contains('goog-te-menu-value') || el.tagName === 'SPAN')) {
+                    if (el.style) {
+                        el.style.color = '#c9d1d9';
+                        el.style.setProperty('color', '#c9d1d9', 'important');
+                    }
+                }
+            });
+        }
+    }
+    
+    // Setup MutationObserver for Google Translate widget (only once)
+    function setupTranslateWidgetObserver() {
+        if (translateWidgetObserver) return; // Already set up
+        
+        translateWidgetObserver = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                mutation.addedNodes.forEach(function(node) {
+                    if (node.nodeType === 1) { // Element node
+                        const menuValueElements = node.querySelectorAll ? node.querySelectorAll('.goog-te-menu-value, .goog-te-menu-value span') : [];
+                        menuValueElements.forEach(function(el) {
+                            if (el.style) {
+                                el.style.color = '#c9d1d9';
+                                el.style.setProperty('color', '#c9d1d9', 'important');
+                            }
+                        });
+                        if (node.classList && (node.classList.contains('goog-te-menu-value') || node.classList.contains('goog-te-gadget-simple'))) {
+                            if (node.style) {
+                                node.style.color = '#c9d1d9';
+                                node.style.setProperty('color', '#c9d1d9', 'important');
+                            }
+                        }
+                    }
+                });
+            });
+            // Also force style all existing elements
+            forceTranslateWidgetStyle();
+        });
+        
+        // Observe the translate element container
+        const translateElement = document.getElementById('google_translate_element');
+        if (translateElement) {
+            translateWidgetObserver.observe(translateElement, { childList: true, subtree: true });
+        }
+        
+        // Also observe document body for any translate elements added elsewhere
+        translateWidgetObserver.observe(document.body, { childList: true, subtree: true });
+    }
+    
     // Google Translate Widget
     function googleTranslateElementInit() {
         if (typeof google !== 'undefined' && google.translate) {
@@ -10872,6 +11037,15 @@ M30 ; End of program
                 layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
                 autoDisplay: false
             }, 'google_translate_element');
+            
+            // Setup observer (only once)
+            setupTranslateWidgetObserver();
+            
+            // Force styling after widget is created (with delays to catch delayed rendering)
+            setTimeout(forceTranslateWidgetStyle, 50);
+            setTimeout(forceTranslateWidgetStyle, 200);
+            setTimeout(forceTranslateWidgetStyle, 500);
+            setTimeout(forceTranslateWidgetStyle, 1000);
         } else {
             console.error('Google Translate API not loaded');
         }
@@ -10885,8 +11059,23 @@ M30 ; End of program
             script.type = 'text/javascript';
             script.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
             document.body.appendChild(script);
+        } else {
+            // Widget already loaded, setup observer and force styling
+            setupTranslateWidgetObserver();
+            setTimeout(forceTranslateWidgetStyle, 100);
+            setTimeout(forceTranslateWidgetStyle, 500);
         }
     });
+    
+    // Also setup observer when DOM is ready (in case widget loads early)
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTranslateWidgetObserver();
+        });
+    } else {
+        // DOM already loaded
+        setupTranslateWidgetObserver();
+    }
 </script>
 <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
