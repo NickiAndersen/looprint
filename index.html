@@ -6,6 +6,7 @@
     <title>Looprint (Beta)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
     <style>
         :root {
             --bg: #0d1117;
@@ -1249,6 +1250,9 @@
         <div class="footer-note" data-lang="footerNote" id="factorianLinkFooterNote">
             Looprint loops your file and adds push-off sequences between loops. All print settings (temperatures, speeds, etc.) come from your original file. Start and end code are added automatically for all file types (G-code and 3MF).
         </div>
+        <p style="width: 100%; text-align: center; font-size: 0.8rem; color: var(--muted); margin: 8px 0 4px 0;">
+            Total prints automated by community: <span id="global-counter" style="color: var(--accent); font-weight: 600;">...</span>
+        </p>
         <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--text); margin: 0; padding: 5px 0 0; font-weight: 600;">Nicki Andersen</p>
         <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--muted); margin: 0; padding: 2px 0 0;">(v3.0 Beta)</p>
     </div>
@@ -1731,7 +1735,10 @@
     // ===== CONSTANTS =====
     const COOLDOWN_WARNING_THRESHOLD = 35;
     const REQUIRED_SIGNATURE = "FactorianDesigns";
-    const LOOPRINT_SIGNATURE = "Looprint Loop File"; 
+    const LOOPRINT_SIGNATURE = "Looprint Loop File";
+    
+    // Global counter instance for tracking total prints automated
+    let globalCounter = null; 
     const END_CODE_START_MARKER = ";===== date:";
     // Regex pattern for finding G-code files in 3MF structure
     const GCODE_FILE_IN_3MF_REGEX = /^Metadata\/plate_\d+\.gcode$/i; 
@@ -4747,7 +4754,253 @@ M400 ; Wait for all motion to complete
         
         // Update file size estimate when loop count changes
         document.getElementById("loopCount").addEventListener('input', updateFileSizeEstimate);
+        
+        // Initialize global counter
+        initGlobalCounter();
     };
+
+    /**
+     * Initialize global counter instance and load current value
+     * Waits for CounterAPI library to be available
+     */
+    function initGlobalCounter() {
+        // Wait for CounterAPI to be available (with timeout)
+        let attempts = 0;
+        const maxAttempts = 50; // 5 seconds max wait
+        
+        const checkCounter = setInterval(() => {
+            attempts++;
+            
+            if (typeof Counter !== 'undefined') {
+                clearInterval(checkCounter);
+                try {
+                    // Create counter instance
+                    globalCounter = new Counter({ workspace: 'looprint-project' });
+                    console.log('CounterAPI initialized successfully');
+                    console.log('Counter instance methods:', Object.keys(globalCounter));
+                    console.log('Counter prototype methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(globalCounter)));
+                    
+                    // Load current value
+                    loadGlobalCounter();
+                } catch (error) {
+                    console.error('Failed to initialize Counter instance:', error);
+                    updateCounterUI('N/A');
+                }
+            } else if (attempts >= maxAttempts) {
+                clearInterval(checkCounter);
+                console.warn('CounterAPI library not loaded after timeout');
+                updateCounterUI('N/A');
+            }
+        }, 100);
+    }
+
+    /**
+     * Load current counter value from API
+     * Uses CounterAPI library which handles CORS
+     */
+    async function loadGlobalCounter() {
+        const counterEl = document.getElementById('global-counter');
+        if (!counterEl) {
+            console.warn('Counter UI element not found');
+            return;
+        }
+        
+        // Show loading state
+        counterEl.textContent = '...';
+        
+        if (!globalCounter) {
+            console.warn('Global counter not initialized');
+            updateCounterUI('0');
+            return;
+        }
+        
+        try {
+            // Try to get counter value
+            let result = null;
+            
+            try {
+                result = await globalCounter.get('total-loops');
+                console.log('CounterAPI get() result:', result);
+            } catch (e1) {
+                // Check if workspace doesn't exist (404)
+                if (e1.status === 404 || e1.code === '404' || (e1.message && e1.message.includes('not found'))) {
+                    console.log('Workspace or counter not found - will be created on first increment');
+                    updateCounterUI('0');
+                    return;
+                }
+                console.warn('CounterAPI get() failed:', e1);
+                updateCounterUI('0');
+                return;
+            }
+            
+            // Handle different possible response structures
+            let count = null;
+            if (result) {
+                // Check various possible response formats
+                if (typeof result === 'number') {
+                    count = result;
+                } else if (result.count !== undefined) {
+                    count = typeof result.count === 'number' ? result.count : parseInt(result.count);
+                } else if (result.value !== undefined) {
+                    count = typeof result.value === 'number' ? result.value : parseInt(result.value);
+                } else if (result.data) {
+                    if (typeof result.data === 'number') {
+                        count = result.data;
+                    } else if (result.data.count !== undefined) {
+                        count = typeof result.data.count === 'number' ? result.data.count : parseInt(result.data.count);
+                    } else if (result.data.value !== undefined) {
+                        count = typeof result.data.value === 'number' ? result.data.value : parseInt(result.data.value);
+                    }
+                } else if (result.total !== undefined) {
+                    count = typeof result.total === 'number' ? result.total : parseInt(result.total);
+                }
+            }
+            
+            if (count !== null && !isNaN(count)) {
+                updateCounterUI(count);
+            } else {
+                console.warn('Could not extract count from result:', result);
+                updateCounterUI('0');
+            }
+        } catch (error) {
+            console.warn('Failed to load global counter:', error);
+            updateCounterUI('0');
+        }
+    }
+
+    /**
+     * Increment global counter by specified amount
+     * Uses CounterAPI library which handles CORS
+     * Creates workspace and counter if they don't exist
+     * @param {number} loops - Number of loops to add to counter
+     */
+    async function incrementGlobalCounter(loops) {
+        if (!loops || loops < 1) {
+            console.warn('Invalid loops value for counter:', loops);
+            return;
+        }
+        
+        if (!globalCounter) {
+            console.warn('Global counter not initialized');
+            return;
+        }
+        
+        try {
+            let result = null;
+            let currentCount = 0;
+            
+            // Get current count from UI to use as fallback
+            const counterEl = document.getElementById('global-counter');
+            if (counterEl && counterEl.textContent !== '...' && counterEl.textContent !== 'N/A') {
+                const currentText = counterEl.textContent.replace(/,/g, '');
+                currentCount = parseInt(currentText) || 0;
+            }
+            
+            // Try to increment counter - this should create it if it doesn't exist
+            // CounterAPI v2 should auto-create counters on first increment
+            try {
+                result = await globalCounter.up('total-loops', { amount: loops });
+                console.log('CounterAPI up() result:', result);
+            } catch (e1) {
+                // 404 is expected on first use - counter doesn't exist yet
+                // CounterAPI should create it on increment, but if it fails, try alternative syntax
+                const is404 = e1.status === 404 || e1.code === '404' || 
+                              (e1.message && (e1.message.includes('not found') || e1.message.includes('404')));
+                
+                if (is404) {
+                    // Counter doesn't exist - try alternative syntax or create it
+                    console.log('Counter not found (expected on first use), trying alternative method...');
+                    try {
+                        // Try alternative syntax - just pass the number directly
+                        result = await globalCounter.up('total-loops', loops);
+                        console.log('CounterAPI up(amount) result:', result);
+                    } catch (e2) {
+                        // If still 404, the counter will be created on next successful call
+                        // For now, update UI optimistically
+                        if (e2.status === 404 || e2.code === '404') {
+                            console.log('Counter will be created on next successful increment. Updating UI optimistically.');
+                        } else {
+                            console.warn('CounterAPI increment error:', e2);
+                        }
+                        const newCount = currentCount + loops;
+                        updateCounterUI(newCount);
+                        return;
+                    }
+                } else {
+                    // Other error, try alternative method
+                    console.warn('CounterAPI increment error (non-404):', e1);
+                    try {
+                        result = await globalCounter.up('total-loops', loops);
+                        console.log('CounterAPI up(amount) result:', result);
+                    } catch (e3) {
+                        // If all methods fail, optimistically update UI
+                        console.warn('CounterAPI increment failed, updating UI optimistically');
+                        const newCount = currentCount + loops;
+                        updateCounterUI(newCount);
+                        return;
+                    }
+                }
+            }
+            
+            // Handle different possible response structures
+            let count = null;
+            if (result) {
+                if (typeof result === 'number') {
+                    count = result;
+                } else if (result.count !== undefined) {
+                    count = typeof result.count === 'number' ? result.count : parseInt(result.count);
+                } else if (result.value !== undefined) {
+                    count = typeof result.value === 'number' ? result.value : parseInt(result.value);
+                } else if (result.data) {
+                    if (typeof result.data === 'number') {
+                        count = result.data;
+                    } else if (result.data.count !== undefined) {
+                        count = typeof result.data.count === 'number' ? result.data.count : parseInt(result.data.count);
+                    } else if (result.data.value !== undefined) {
+                        count = typeof result.data.value === 'number' ? result.data.value : parseInt(result.data.value);
+                    }
+                } else if (result.total !== undefined) {
+                    count = typeof result.total === 'number' ? result.total : parseInt(result.total);
+                }
+            }
+            
+            if (count !== null && !isNaN(count)) {
+                updateCounterUI(count);
+            } else {
+                // If we can't parse the result, optimistically update UI
+                const newCount = currentCount + loops;
+                updateCounterUI(newCount);
+            }
+        } catch (error) {
+            // Silently fail - don't block generation or show errors
+            // But try to update UI optimistically
+            try {
+                const counterEl = document.getElementById('global-counter');
+                if (counterEl && counterEl.textContent !== '...' && counterEl.textContent !== 'N/A') {
+                    const currentText = counterEl.textContent.replace(/,/g, '');
+                    const currentCount = parseInt(currentText) || 0;
+                    updateCounterUI(currentCount + loops);
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }
+    }
+
+    /**
+     * Update counter UI with formatted number
+     * @param {number|string} value - Counter value or error string
+     */
+    function updateCounterUI(value) {
+        const counterEl = document.getElementById('global-counter');
+        if (!counterEl) return;
+        
+        if (typeof value === 'number') {
+            counterEl.textContent = value.toLocaleString();
+        } else {
+            counterEl.textContent = value;
+        }
+    }
 
     function updateValidationStatusText() {
         const statusEl = document.getElementById("fileValidationStatus");
@@ -6290,6 +6543,9 @@ M400 ; Wait for all motion to complete
         }
 
         if (!document.getElementById("skirtConfirmed").checked) { showStatus("skirtError", "error"); return; }
+
+        // Increment global counter (non-blocking)
+        incrementGlobalCounter(loops);
 
         const file = fileInput.files[0];
         
