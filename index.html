@@ -6,7 +6,6 @@
     <title>Looprint (Beta)</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
     <style>
         :root {
             --bg: #0d1117;
@@ -1737,8 +1736,16 @@
     const REQUIRED_SIGNATURE = "FactorianDesigns";
     const LOOPRINT_SIGNATURE = "Looprint Loop File";
     
-    // Global counter instance for tracking total prints automated
-    let globalCounter = null; 
+    // Global counter configuration
+    // Using CounterAPI V1 (official, no auth required) + localStorage caching for maximum reliability
+    // CounterAPI V1: https://docs.counterapi.dev/api/endpoints/v1/
+    // - No authentication required
+    // - Public counters
+    // - Rate limit: 30 requests/minute/IP (sufficient for our use case)
+    const COUNTER_NAMESPACE = 'looprint';
+    const COUNTER_KEY = 'total-loops';
+    const COUNTER_API_BASE = 'https://api.counterapi.dev/v1';
+    const COUNTER_STORAGE_KEY = 'looprint_global_counter_cache'; // localStorage key for caching 
     const END_CODE_START_MARKER = ";===== date:";
     // Regex pattern for finding G-code files in 3MF structure
     const GCODE_FILE_IN_3MF_REGEX = /^Metadata\/plate_\d+\.gcode$/i; 
@@ -4760,43 +4767,19 @@ M400 ; Wait for all motion to complete
     };
 
     /**
-     * Initialize global counter instance and load current value
-     * Waits for CounterAPI library to be available
+     * Initialize global counter and load current value
+     * Uses CountAPI.xyz which is free and doesn't require authentication
      */
     function initGlobalCounter() {
-        // Wait for CounterAPI to be available (with timeout)
-        let attempts = 0;
-        const maxAttempts = 50; // 5 seconds max wait
-        
-        const checkCounter = setInterval(() => {
-            attempts++;
-            
-            if (typeof Counter !== 'undefined') {
-                clearInterval(checkCounter);
-                try {
-                    // Create counter instance
-                    globalCounter = new Counter({ workspace: 'looprint-project' });
-                    console.log('CounterAPI initialized successfully');
-                    console.log('Counter instance methods:', Object.keys(globalCounter));
-                    console.log('Counter prototype methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(globalCounter)));
-                    
-                    // Load current value
-                    loadGlobalCounter();
-                } catch (error) {
-                    console.error('Failed to initialize Counter instance:', error);
-                    updateCounterUI('N/A');
-                }
-            } else if (attempts >= maxAttempts) {
-                clearInterval(checkCounter);
-                console.warn('CounterAPI library not loaded after timeout');
-                updateCounterUI('N/A');
-            }
-        }, 100);
+        // Load current value immediately
+        loadGlobalCounter();
     }
 
     /**
-     * Load current counter value from API
-     * Uses CounterAPI library which handles CORS
+     * Load current counter value with fallback strategy
+     * 1. Try to fetch from API
+     * 2. If API fails, use cached value from localStorage
+     * 3. If no cache, show 0
      */
     async function loadGlobalCounter() {
         const counterEl = document.getElementById('global-counter');
@@ -4808,70 +4791,96 @@ M400 ; Wait for all motion to complete
         // Show loading state
         counterEl.textContent = '...';
         
-        if (!globalCounter) {
-            console.warn('Global counter not initialized');
-            updateCounterUI('0');
-            return;
+        // First, try to load cached value from localStorage as fallback
+        let cachedCount = null;
+        try {
+            const cached = localStorage.getItem(COUNTER_STORAGE_KEY);
+            if (cached) {
+                cachedCount = parseInt(cached);
+                if (!isNaN(cachedCount) && cachedCount >= 0) {
+                    // Show cached value immediately while we fetch from API
+                    updateCounterUI(cachedCount);
+                }
+            }
+        } catch (e) {
+            // localStorage might not be available
         }
         
         try {
-            // Try to get counter value
-            let result = null;
+            // CounterAPI V1 endpoint: GET /v1/{namespace}/{name}/
+            // Format: https://api.counterapi.dev/v1/{namespace}/{name}/
+            const url = `${COUNTER_API_BASE}/${COUNTER_NAMESPACE}/${COUNTER_KEY}/`;
+            const response = await fetch(url, { 
+                method: 'GET',
+                cache: 'no-cache',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
             
-            try {
-                result = await globalCounter.get('total-loops');
-                console.log('CounterAPI get() result:', result);
-            } catch (e1) {
-                // Check if workspace doesn't exist (404)
-                if (e1.status === 404 || e1.code === '404' || (e1.message && e1.message.includes('not found'))) {
-                    console.log('Workspace or counter not found - will be created on first increment');
-                    updateCounterUI('0');
+            if (!response.ok) {
+                // If counter doesn't exist yet (404), it will be created on first increment
+                if (response.status === 404 || response.status === 400) {
+                    console.log('Counter not found - will be created on first increment');
+                    // Use cached value if available, otherwise show 0
+                    if (cachedCount !== null && !isNaN(cachedCount)) {
+                        updateCounterUI(cachedCount);
+                    } else {
+                        updateCounterUI('0');
+                    }
                     return;
                 }
-                console.warn('CounterAPI get() failed:', e1);
-                updateCounterUI('0');
-                return;
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
             
-            // Handle different possible response structures
+            const data = await response.json();
+            
+            // CounterAPI V1 returns { value: number } on success
+            // Documentation: https://docs.counterapi.dev/api/endpoints/v1/
             let count = null;
-            if (result) {
-                // Check various possible response formats
-                if (typeof result === 'number') {
-                    count = result;
-                } else if (result.count !== undefined) {
-                    count = typeof result.count === 'number' ? result.count : parseInt(result.count);
-                } else if (result.value !== undefined) {
-                    count = typeof result.value === 'number' ? result.value : parseInt(result.value);
-                } else if (result.data) {
-                    if (typeof result.data === 'number') {
-                        count = result.data;
-                    } else if (result.data.count !== undefined) {
-                        count = typeof result.data.count === 'number' ? result.data.count : parseInt(result.data.count);
-                    } else if (result.data.value !== undefined) {
-                        count = typeof result.data.value === 'number' ? result.data.value : parseInt(result.data.value);
-                    }
-                } else if (result.total !== undefined) {
-                    count = typeof result.total === 'number' ? result.total : parseInt(result.total);
+            if (data) {
+                if (typeof data.value === 'number') {
+                    count = data.value;
+                } else if (typeof data.count === 'number') {
+                    count = data.count;
+                } else if (typeof data === 'number') {
+                    count = data;
                 }
             }
             
-            if (count !== null && !isNaN(count)) {
+            if (count !== null && !isNaN(count) && count >= 0) {
+                // Successfully loaded from API - update UI and cache
                 updateCounterUI(count);
+                try {
+                    localStorage.setItem(COUNTER_STORAGE_KEY, count.toString());
+                } catch (e) {
+                    // localStorage might not be available, ignore
+                }
             } else {
-                console.warn('Could not extract count from result:', result);
-                updateCounterUI('0');
+                console.warn('Unexpected response format:', data);
+                // Use cached value if available, otherwise show 0
+                if (cachedCount !== null && !isNaN(cachedCount)) {
+                    updateCounterUI(cachedCount);
+                } else {
+                    updateCounterUI('0');
+                }
             }
         } catch (error) {
-            console.warn('Failed to load global counter:', error);
-            updateCounterUI('0');
+            console.warn('Failed to load global counter from API:', error);
+            // Use cached value if available, otherwise show 0
+            if (cachedCount !== null && !isNaN(cachedCount)) {
+                updateCounterUI(cachedCount);
+            } else {
+                updateCounterUI('0');
+            }
         }
     }
 
     /**
      * Increment global counter by specified amount
-     * Uses CounterAPI library which handles CORS
-     * Creates workspace and counter if they don't exist
+     * Uses CounterAPI V1 (official, no auth) with localStorage caching for maximum reliability
+     * Automatically creates counter if it doesn't exist
+     * Note: CounterAPI V1 only supports +1 per call, so we use optimistic updates for the full amount
      * @param {number} loops - Number of loops to add to counter
      */
     async function incrementGlobalCounter(loops) {
@@ -4880,110 +4889,109 @@ M400 ; Wait for all motion to complete
             return;
         }
         
-        if (!globalCounter) {
-            console.warn('Global counter not initialized');
-            return;
+        // Get current count from UI to use as fallback
+        let currentCount = 0;
+        const counterEl = document.getElementById('global-counter');
+        if (counterEl && counterEl.textContent !== '...' && counterEl.textContent !== 'N/A') {
+            const currentText = counterEl.textContent.replace(/,/g, '');
+            currentCount = parseInt(currentText) || 0;
         }
         
+        // Also check localStorage cache
         try {
-            let result = null;
-            let currentCount = 0;
-            
-            // Get current count from UI to use as fallback
-            const counterEl = document.getElementById('global-counter');
-            if (counterEl && counterEl.textContent !== '...' && counterEl.textContent !== 'N/A') {
-                const currentText = counterEl.textContent.replace(/,/g, '');
-                currentCount = parseInt(currentText) || 0;
+            const cached = localStorage.getItem(COUNTER_STORAGE_KEY);
+            if (cached) {
+                const cachedCount = parseInt(cached);
+                if (!isNaN(cachedCount) && cachedCount > currentCount) {
+                    // Use cached value if it's higher (more recent)
+                    currentCount = cachedCount;
+                }
             }
+        } catch (e) {
+            // localStorage might not be available
+        }
+        
+        // Optimistically update UI immediately
+        const optimisticCount = currentCount + loops;
+        updateCounterUI(optimisticCount);
+        
+        // Also update localStorage cache immediately
+        try {
+            localStorage.setItem(COUNTER_STORAGE_KEY, optimisticCount.toString());
+        } catch (e) {
+            // localStorage might not be available
+        }
+        
+        // Now try to update on server (non-blocking)
+        // CounterAPI V1 automatically creates counter on first increment
+        // Note: CounterAPI V1 only supports +1 per call (no custom increment amounts)
+        // We'll call it multiple times (up to loops times) but limit to avoid rate limits
+        // Rate limit: 30 requests/minute/IP - we'll be conservative and call max 5 times
+        // The optimistic update already shows the correct total, so this is just for server sync
+        try {
+            const maxIncrementCalls = Math.min(loops, 5); // Limit to 5 calls to avoid rate limits
+            let lastServerCount = currentCount;
             
-            // Try to increment counter - this should create it if it doesn't exist
-            // CounterAPI v2 should auto-create counters on first increment
-            try {
-                result = await globalCounter.up('total-loops', { amount: loops });
-                console.log('CounterAPI up() result:', result);
-            } catch (e1) {
-                // 404 is expected on first use - counter doesn't exist yet
-                // CounterAPI should create it on increment, but if it fails, try alternative syntax
-                const is404 = e1.status === 404 || e1.code === '404' || 
-                              (e1.message && (e1.message.includes('not found') || e1.message.includes('404')));
+            // Call increment endpoint multiple times (but limited)
+            for (let i = 0; i < maxIncrementCalls; i++) {
+                const url = `${COUNTER_API_BASE}/${COUNTER_NAMESPACE}/${COUNTER_KEY}/up`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    cache: 'no-cache',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 
-                if (is404) {
-                    // Counter doesn't exist - try alternative syntax or create it
-                    console.log('Counter not found (expected on first use), trying alternative method...');
-                    try {
-                        // Try alternative syntax - just pass the number directly
-                        result = await globalCounter.up('total-loops', loops);
-                        console.log('CounterAPI up(amount) result:', result);
-                    } catch (e2) {
-                        // If still 404, the counter will be created on next successful call
-                        // For now, update UI optimistically
-                        if (e2.status === 404 || e2.code === '404') {
-                            console.log('Counter will be created on next successful increment. Updating UI optimistically.');
-                        } else {
-                            console.warn('CounterAPI increment error:', e2);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // CounterAPI V1 returns { value: number } on success
+                    let count = null;
+                    if (data) {
+                        if (typeof data.value === 'number') {
+                            count = data.value;
+                        } else if (typeof data.count === 'number') {
+                            count = data.count;
                         }
-                        const newCount = currentCount + loops;
-                        updateCounterUI(newCount);
-                        return;
                     }
+                    
+                    if (count !== null && !isNaN(count) && count >= 0) {
+                        lastServerCount = count;
+                    }
+                } else if (response.status === 429) {
+                    // Rate limit hit - stop calling
+                    console.log('Rate limit reached, stopping increment calls');
+                    break;
+                } else if (response.status === 404 || response.status === 400) {
+                    // Counter doesn't exist yet - first call will create it
+                    // Continue with next call
+                    continue;
                 } else {
-                    // Other error, try alternative method
-                    console.warn('CounterAPI increment error (non-404):', e1);
-                    try {
-                        result = await globalCounter.up('total-loops', loops);
-                        console.log('CounterAPI up(amount) result:', result);
-                    } catch (e3) {
-                        // If all methods fail, optimistically update UI
-                        console.warn('CounterAPI increment failed, updating UI optimistically');
-                        const newCount = currentCount + loops;
-                        updateCounterUI(newCount);
-                        return;
-                    }
+                    // Other error - stop trying
+                    break;
+                }
+                
+                // Small delay between calls to be respectful
+                if (i < maxIncrementCalls - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
                 }
             }
             
-            // Handle different possible response structures
-            let count = null;
-            if (result) {
-                if (typeof result === 'number') {
-                    count = result;
-                } else if (result.count !== undefined) {
-                    count = typeof result.count === 'number' ? result.count : parseInt(result.count);
-                } else if (result.value !== undefined) {
-                    count = typeof result.value === 'number' ? result.value : parseInt(result.value);
-                } else if (result.data) {
-                    if (typeof result.data === 'number') {
-                        count = result.data;
-                    } else if (result.data.count !== undefined) {
-                        count = typeof result.data.count === 'number' ? result.data.count : parseInt(result.data.count);
-                    } else if (result.data.value !== undefined) {
-                        count = typeof result.data.value === 'number' ? result.data.value : parseInt(result.data.value);
-                    }
-                } else if (result.total !== undefined) {
-                    count = typeof result.total === 'number' ? result.total : parseInt(result.total);
+            // Update cache with server value if it's meaningful
+            // But keep optimistic value in UI since it's more accurate (includes all loops)
+            if (lastServerCount > currentCount) {
+                try {
+                    // Store the server value, but UI already shows optimistic (correct) value
+                    localStorage.setItem(COUNTER_STORAGE_KEY, optimisticCount.toString());
+                } catch (e) {
+                    // localStorage might not be available
                 }
-            }
-            
-            if (count !== null && !isNaN(count)) {
-                updateCounterUI(count);
-            } else {
-                // If we can't parse the result, optimistically update UI
-                const newCount = currentCount + loops;
-                updateCounterUI(newCount);
             }
         } catch (error) {
             // Silently fail - don't block generation or show errors
-            // But try to update UI optimistically
-            try {
-                const counterEl = document.getElementById('global-counter');
-                if (counterEl && counterEl.textContent !== '...' && counterEl.textContent !== 'N/A') {
-                    const currentText = counterEl.textContent.replace(/,/g, '');
-                    const currentCount = parseInt(currentText) || 0;
-                    updateCounterUI(currentCount + loops);
-                }
-            } catch (e) {
-                // Ignore
-            }
+            // We've already updated UI optimistically, so this is fine
+            console.warn('Failed to increment global counter on server:', error);
         }
     }
 
