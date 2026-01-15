@@ -882,13 +882,13 @@
                     📄 G-code Files
                 </h4>
                 <ol style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                    <li style="margin-bottom: 8px;">Slice your model in Bambu Studio</li>
+                    <li style="margin-bottom: 8px;">Slice your model in Bambu Studio <strong>using <a href="https://factoriandesigns.com/" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">Factorian Designs</a> start and end code templates</strong></li>
                     <li style="margin-bottom: 8px;">Click <strong>"File"</strong> in the menu bar</li>
                     <li style="margin-bottom: 8px;">Select <strong>"Export"</strong> → <strong>"Export G-Code"</strong></li>
                     <li style="margin-bottom: 0;">Upload the exported G-code file to Looprint</li>
                 </ol>
                 <p style="margin-top: 12px; margin-bottom: 0; font-size: 0.85rem; color: var(--muted); padding: 10px; background: var(--card); border-radius: 6px;">
-                    <strong>Note:</strong> G-code files must be printed from SD card (required)
+                    <strong>Note:</strong> G-code files must be printed from SD card (required). <strong>G-code files must be generated with Factorian's start/end code templates.</strong> I recommend watching his video: <a href="https://factoriandesigns.com/print-automation-bambu-lab-a1-a1-mini" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">A1/A1 Mini</a> or <a href="https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">P1/P1S/X1/X1C</a>.
                 </p>
             </div>
             
@@ -1250,7 +1250,7 @@
             Looprint loops your file and adds push-off sequences between loops. All print settings (temperatures, speeds, etc.) come from your original file. Start and end code are added automatically for all file types (G-code and 3MF).
         </div>
         <p style="width: 100%; text-align: center; font-size: 0.8rem; color: var(--muted); margin: 8px 0 4px 0;">
-            Total prints automated by community: <span id="global-counter" style="color: var(--accent); font-weight: 600;">...</span>
+            Total loops automated by community: <span id="global-counter" style="color: var(--accent); font-weight: 600;">...</span>
         </p>
         <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--text); margin: 0; padding: 5px 0 0; font-weight: 600;">Nicki Andersen</p>
         <p style="width: 100%; text-align: right; font-size: 0.75rem; color: var(--muted); margin: 0; padding: 2px 0 0;">(v3.0 Beta)</p>
@@ -1372,6 +1372,7 @@
                         <ul>
                             <li>Supported extensions: <code>.gcode</code>, <code>.gco</code>, <code>.g</code>, <code>.txt</code></li>
                             <li>Must be printed from SD card (required)</li>
+                            <li><strong>Must be sliced using <a href="https://factoriandesigns.com/" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">Factorian Designs</a> start and end code templates.</strong> I recommend watching his video: <a href="https://factoriandesigns.com/print-automation-bambu-lab-a1-a1-mini" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">A1/A1 Mini</a> or <a href="https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">P1/P1S/X1/X1C</a></li>
                             <li>Printer model must be selected manually (P1/P1S, X1/X1C, A1, or A1 Mini)</li>
                         </ul>
                     </li>
@@ -1410,7 +1411,7 @@
                             </li>
                             <li><strong>For G-code files:</strong>
                                 <ol>
-                                    <li>Slice your model in Bambu Studio</li>
+                                    <li>Slice your model in Bambu Studio <strong>using <a href="https://factoriandesigns.com/" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">Factorian Designs</a> start and end code templates.</strong> I recommend watching his video: <a href="https://factoriandesigns.com/print-automation-bambu-lab-a1-a1-mini" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">A1/A1 Mini</a> or <a href="https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">P1/P1S/X1/X1C</a></li>
                                     <li>Click "File" in the menu bar</li>
                                     <li>Select "Export" → "Export G-Code"</li>
                                     <li>Click "Choose File" or drag and drop the exported G-code file to Looprint</li>
@@ -1674,7 +1675,7 @@
                     <div class="printer-accordion-content">
                         <div class="printer-accordion-inner">
                             <ul>
-                                <li><strong>File won't upload:</strong> Ensure it's a valid G-code (.gcode, .gco, .g, .txt) or 3MF (.3mf) file. Maximum file size: 150MB</li>
+                                <li><strong>File won't upload:</strong> Ensure it's a valid G-code (.gcode, .gco, .g, .txt) or 3MF (.3mf) file. Maximum file size: 150MB. <strong>G-code files must be generated with <a href="https://factoriandesigns.com/" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">Factorian Designs</a> start and end code templates.</strong> See: <a href="https://factoriandesigns.com/print-automation-bambu-lab-a1-a1-mini" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">A1/A1 Mini</a> or <a href="https://factoriandesigns.com/print-automation-bambu-lab-p1-x1-2" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: none;">P1/P1S/X1/X1C</a></li>
                                 <li><strong>Push-off doesn't work:</strong> Verify Brim is enabled and model is at bed edge. Use "Generate Test File" to test push-off sequence</li>
                                 <li><strong>Temperature issues:</strong> All temperatures come from your original file - check your slicer settings. Start code automatically extracts and uses correct temperatures</li>
                                 <li><strong>File too large:</strong> Maximum file size is 150MB. Large files may take longer to process - be patient. Progress bar shows processing status</li>
@@ -4140,6 +4141,7 @@ M960 S5 P0 ; turn off logo lamp
             step1Title: "1. Upload File",             step1Help: "Upload a G-code file (directly from slicer) or a 3MF file. Start and end code will be added automatically.",
             validationWarning: "✓ Push direction is automatically detected from model placement.", validationError: "Validation failed: Could not read or parse the file. Please ensure it is a valid G-code or 3MF file.",
             validationErrorLooprint: "Validation failed: This file has already been processed by Looprint. Please upload the original sliced file.",
+            validationErrorFactorian: "Validation failed: This G-code file does not have Factorian's start/end code structure. Looprint requires files generated with Factorian Designs templates. Please slice your file using Factorian's start and end code templates. See: https://factoriandesigns.com/",
             validationErrorParse: "Validation failed: Could not read or parse the file content. Ensure it is a valid G-code or 3MF file.",
             validationSuccess: "File verified: Valid G-code or 3MF file detected. Start and end code will be added automatically.", step2Title: "2. Loop Configuration", loopsLabel: "Number of loops", safetyText: "I confirm this file was sliced with Brim enabled.",
             safetyHelp: "", generateBtn: "Generate Loop File", generateTestBtn: "Generate Test File", resetBtn: "Reset to Defaults", 
@@ -6269,9 +6271,202 @@ M400 ; Wait for all motion to complete
                     validationColor = "var(--danger)";
                     bedPreviewContainer.classList.remove('locked');
                 } else {
-                    // G-code file is valid (no longer require Factorian signature - start/end code will be added automatically)
-                    validationKey = "validationSuccess";
-                    validationColor = "var(--accent)";
+                    // CRITICAL: Check if file has Factorian structure (required for Looprint to work)
+                    // Factorian files MUST have at least one of these primary indicators:
+                    // 1. EXECUTABLE_BLOCK_START + "Made by FactorianDesigns" or "FactorianDesigns" signature
+                    // 2. FEATURE: Custom + "Made by FactorianDesigns" or "FactorianDesigns" signature
+                    // 3. ;===== machine: P1S/X1/A1 with "Made by FactorianDesigns" or "FactorianDesigns" signature
+                    // 
+                    // NOTE: BambuStudio files also have EXECUTABLE_BLOCK_START and FEATURE: Custom,
+                    // but they DON'T have "Made by FactorianDesigns" signature
+                    const hasExecutableBlock = content.indexOf('; EXECUTABLE_BLOCK_START') !== -1;
+                    const hasFeatureCustom = content.indexOf('; FEATURE: Custom') !== -1;
+                    
+                    // CRITICAL: Check for Factorian signature to distinguish from BambuStudio files
+                    // BambuStudio files have EXECUTABLE_BLOCK_START and FEATURE: Custom but NOT "Made by FactorianDesigns"
+                    const hasFactorianSignature = content.indexOf('Made by FactorianDesigns') !== -1 || 
+                                                   content.indexOf('FactorianDesigns') !== -1;
+                    
+                    // Must match Factorian's exact format: ;===== machine: P1S ===== (with ====)
+                    // CRITICAL: ;===== and machine: must be on the SAME LINE (Factorian format)
+                    // BUT: Also check that Factorian signature is nearby (within 500 chars) to ensure it's the real start code
+                    const factorianMachinePattern = /;=====\s+machine:\s*(P1S|P1|X1|X1C|A1)/i;
+                    let hasFactorianMachine = false;
+                    const machineMatch = content.match(factorianMachinePattern);
+                    if (machineMatch) {
+                        // Check if Factorian signature is nearby (within 500 chars after the match)
+                        const matchIndex = machineMatch.index;
+                        const nearbySection = content.substring(matchIndex, Math.min(matchIndex + 500, content.length));
+                        const hasSignatureNearby = nearbySection.indexOf('Made by FactorianDesigns') !== -1 || 
+                                                     nearbySection.indexOf('FactorianDesigns') !== -1;
+                        hasFactorianMachine = hasSignatureNearby;
+                    }
+                    
+                    // Primary checks - must have Factorian signature if using EXECUTABLE_BLOCK_START or FEATURE: Custom
+                    // OR must have ;===== machine: format WITH Factorian signature nearby
+                    let hasFactorianStructure = false;
+                    if (hasFactorianMachine) {
+                        // ;===== machine: format WITH Factorian signature nearby is unique to Factorian
+                        hasFactorianStructure = true;
+                    } else if (hasExecutableBlock || hasFeatureCustom) {
+                        // If file has EXECUTABLE_BLOCK_START or FEATURE: Custom, must also have Factorian signature
+                        hasFactorianStructure = hasFactorianSignature;
+                    }
+                    
+                    // DEBUG: Always log validation results
+                    if (DEBUG_MODE || !hasFactorianStructure) {
+                        console.log("[VALIDATION] Checking Factorian structure:");
+                        console.log("  - EXECUTABLE_BLOCK_START:", hasExecutableBlock);
+                        console.log("  - FEATURE: Custom:", hasFeatureCustom);
+                        console.log("  - ;===== machine: P1S/X1/A1:", hasFactorianMachine);
+                        console.log("  - FactorianDesigns signature:", hasFactorianSignature);
+                        if (machineMatch) {
+                            console.log("  - ;===== machine: match found:", machineMatch[0].substring(0, 100));
+                            const matchIndex = machineMatch.index;
+                            const nearbySection = content.substring(matchIndex, Math.min(matchIndex + 500, content.length));
+                            const hasSignatureNearby = nearbySection.indexOf('Made by FactorianDesigns') !== -1 || 
+                                                         nearbySection.indexOf('FactorianDesigns') !== -1;
+                            console.log("  - Factorian signature nearby:", hasSignatureNearby);
+                            if (!hasSignatureNearby) {
+                                console.warn("  - WARNING: ;===== machine: found but NO Factorian signature nearby - likely not a Factorian start code!");
+                            }
+                        }
+                        console.log("  - hasFactorianStructure:", hasFactorianStructure);
+                        if ((hasExecutableBlock || hasFeatureCustom) && !hasFactorianSignature) {
+                            console.warn("  - WARNING: File has EXECUTABLE_BLOCK_START or FEATURE: Custom but NO FactorianDesigns signature - likely a BambuStudio file!");
+                        }
+                    }
+                    
+                    if (!hasFactorianStructure) {
+                        validationKey = "validationErrorFactorian";
+                        validationColor = "var(--danger)";
+                        bedPreviewContainer.classList.remove('locked');
+                        if (DEBUG_MODE) {
+                            console.warn("[VALIDATION] G-code file does not have Factorian structure:");
+                            console.warn("File must be generated with Factorian's start/end code templates to work with Looprint.");
+                            console.warn("See: https://factoriandesigns.com/ for templates");
+                        }
+                    } else {
+                        // G-code file is valid - has Factorian structure
+                        validationKey = "validationSuccess";
+                        validationColor = "var(--accent)";
+                    
+                    // CRITICAL: Detect printer model from G-code header FIRST (before placement detection)
+                    updateProgress(50, "Detecting printer model from G-code...");
+                    let detectedPrinterModel = null;
+                    
+                    // Check if file is already processed by Looprint (has Looprint signature)
+                    const isLooprintFile = content.indexOf(LOOPRINT_SIGNATURE) !== -1 ||
+                                          content.indexOf("Generated by Looprint") !== -1 ||
+                                          content.indexOf("Looprint Factorian Loop File") !== -1;
+                    
+                    if (isLooprintFile && DEBUG_MODE) {
+                        console.warn("[PRINTER MODEL DEBUG] File appears to be already processed by Looprint. Original machine header may not be present.");
+                    }
+                    
+                    // Try to detect from G-code header comments (e.g., ";===== machine: P1S =====")
+                    // Check first 5000 characters for header information (increased to catch headers deeper in processed files)
+                    const headerSection = content.substring(0, Math.min(5000, content.length));
+                    
+                    // Also check CONFIG_BLOCK and EXECUTABLE_BLOCK for printer model info (BambuStudio format)
+                    const configBlockStart = content.indexOf('; CONFIG_BLOCK_START');
+                    const configBlockEnd = content.indexOf('; CONFIG_BLOCK_END');
+                    let configBlockSection = '';
+                    if (configBlockStart !== -1 && configBlockEnd !== -1) {
+                        configBlockSection = content.substring(configBlockStart, Math.min(configBlockEnd + 200, content.length));
+                    }
+                    
+                    const executableBlockStart = content.indexOf('; EXECUTABLE_BLOCK_START');
+                    let executableBlockSection = '';
+                    if (executableBlockStart !== -1) {
+                        executableBlockSection = content.substring(executableBlockStart, Math.min(executableBlockStart + 10000, content.length));
+                    }
+                    
+                    // Combine all sections to search
+                    const searchSection = headerSection + '\n' + configBlockSection + '\n' + executableBlockSection;
+                    
+                    // CRITICAL: Check most specific models FIRST (P1S, X1C) to prevent false positives
+                    // Pattern 1a: ;===== machine: P1S ===== (most specific - check first)
+                    if (searchSection.match(/;=====.*machine:\s*P1S/i) ||
+                        searchSection.match(/machine:\s*P1S/i)) {
+                        detectedPrinterModel = 'P1';
+                        if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected P1S from G-code");
+                    }
+                    // Pattern 2a: ;===== machine: X1C ===== (most specific - check before X1)
+                    else if (searchSection.match(/;=====.*machine:\s*X1C/i) ||
+                             searchSection.match(/machine:\s*X1C/i)) {
+                        detectedPrinterModel = 'x1';
+                        if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected X1C from G-code");
+                    }
+                    // Pattern 2b: ;===== machine: X1 ===== (check after X1C)
+                    else if (searchSection.match(/;=====.*machine:\s*X1\b/i) ||
+                             searchSection.match(/machine:\s*X1\b/i)) {
+                        detectedPrinterModel = 'x1';
+                        if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected X1 from G-code");
+                    }
+                    // Pattern 1b: ;===== machine: P1 ===== (check after P1S and X1/X1C to prevent false positives)
+                    else if (searchSection.match(/;=====.*machine:\s*P1\b/i) || 
+                             searchSection.match(/machine:\s*P1\b/i)) {
+                        detectedPrinterModel = 'P1';
+                        if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected P1 from G-code");
+                    }
+                    // Pattern 3: ;===== machine: A1 =====
+                    else if (searchSection.match(/;=====.*machine:\s*A1\s*(?:mini)?/i) ||
+                             searchSection.match(/machine:\s*A1\s*(?:mini)?/i)) {
+                        // Check if it's A1 Mini specifically
+                        if (searchSection.match(/machine:\s*A1\s+mini/i)) {
+                            detectedPrinterModel = 'A1Mini';
+                            if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 Mini from G-code");
+                        } else {
+                            detectedPrinterModel = 'A1';
+                            if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 from G-code");
+                        }
+                    }
+                    
+                    // If printer model was detected, auto-select and lock it
+                    if (detectedPrinterModel) {
+                        const modelSelect = document.getElementById("printerModel");
+                        const autoDetectedNote = document.getElementById("autoDetectedPrinterNote");
+                        
+                        if (modelSelect) {
+                            autoDetectedPrinterModel = detectedPrinterModel;
+                            currentPrinterModel = detectedPrinterModel;
+                            modelSelect.value = detectedPrinterModel;
+                            modelSelect.disabled = true; // Lock the selector
+                            
+                            if (autoDetectedNote) {
+                                const detectedModelName = detectedPrinterModel === 'A1' ? 'Bambu Lab A1' : 
+                                                         (detectedPrinterModel === 'A1Mini' ? 'Bambu Lab A1 Mini' : 
+                                                         (detectedPrinterModel === 'x1' ? 'Bambu Lab X1/X1C' : 'Bambu Lab P1/P1S'));
+                                autoDetectedNote.textContent = `✓ Printer model auto-detected: ${detectedModelName}`;
+                                autoDetectedNote.style.display = 'block';
+                            }
+                            
+                            if (DEBUG_MODE) {
+                                console.log("[PRINTER MODEL DEBUG] ✓ Auto-detected printer model from G-code:", detectedPrinterModel);
+                                console.log("[PRINTER MODEL DEBUG] Header section (first 500 chars):", headerSection.substring(0, 500));
+                                console.log("[PRINTER MODEL DEBUG] Model selector locked to:", detectedPrinterModel);
+                            }
+                            showStatus("validationWarning", "success", `✓ Printer model auto-detected: ${detectedPrinterModel === 'A1' ? 'Bambu Lab A1' : (detectedPrinterModel === 'A1Mini' ? 'Bambu Lab A1 Mini' : (detectedPrinterModel === 'x1' ? 'Bambu Lab X1/X1C' : 'Bambu Lab P1/P1S'))}. Selector locked to match file.`);
+                        }
+                    } else {
+                        // No printer model detected - unlock selector and use default (P1)
+                        autoDetectedPrinterModel = null;
+                        const modelSelect = document.getElementById("printerModel");
+                        const autoDetectedNote = document.getElementById("autoDetectedPrinterNote");
+                        if (modelSelect) {
+                            modelSelect.disabled = false;
+                        }
+                        if (autoDetectedNote) {
+                            autoDetectedNote.style.display = 'none';
+                        }
+                        if (DEBUG_MODE) {
+                            console.warn("[PRINTER MODEL DEBUG] ✗ Could not detect printer model from G-code header");
+                            console.log("[PRINTER MODEL DEBUG] Header section searched (first 500 chars):", headerSection.substring(0, 500));
+                            console.log("[PRINTER MODEL DEBUG] Patterns checked: 'machine: P1S', 'machine: P1', 'machine: X1', 'machine: X1C', 'machine: A1', 'machine: A1 mini'");
+                            console.log("[PRINTER MODEL DEBUG] Using manual selection (currentPrinterModel:", currentPrinterModel, ")");
+                        }
+                    }
                     
                     updateProgress(60, "Analyzing model placement...");
                     
@@ -6361,6 +6556,7 @@ M400 ; Wait for all motion to complete
                     
                     updateProgress(100, "Ready!");
                     setTimeout(() => updateProgress(0), 500);
+                    }
                 }
 
                 if (validationKey) {
@@ -7035,8 +7231,20 @@ M400 ; Wait for all motion to complete
                             // Set speed mode before print G-code
                             const speedModeInput = document.getElementById('speedMode');
                             const speedMode = speedModeInput ? parseInt(speedModeInput.value) || 100 : 100;
+                            if (DEBUG_MODE) console.log(`[SPEED DEBUG] Loop ${i}: Adding M220 S${speedMode} before print G-code`);
                             parts.push(`M220 S${speedMode} ; Set speed mode\n`);
-                            parts.push(printGcodeExecutable.print);
+                            
+                            // CRITICAL: Replace any M220 S100 in print G-code itself to prevent speed reset during printing
+                            let printGcodeWithSpeed = printGcodeExecutable.print;
+                            if (speedMode !== 100) {
+                                const beforePrintReplace = printGcodeWithSpeed;
+                                printGcodeWithSpeed = printGcodeWithSpeed.replace(/M220\s+S100\b/g, `M220 S${speedMode}`);
+                                if (DEBUG_MODE && beforePrintReplace !== printGcodeWithSpeed) {
+                                    const replacementCount = (printGcodeWithSpeed.match(new RegExp(`M220 S${speedMode}`, 'g')) || []).length;
+                                    console.log(`[SPEED DEBUG] Loop ${i}: Replaced M220 S100 in print G-code with M220 S${speedMode}. Found ${replacementCount} M220 S${speedMode} command(s) in print G-code.`);
+                                }
+                            }
+                            parts.push(printGcodeWithSpeed);
                             parts.push('\n');
                         }
                     } else {
@@ -7051,6 +7259,7 @@ M400 ; Wait for all motion to complete
                         // Set speed mode before print G-code
                         const speedModeInputFallback = document.getElementById('speedMode');
                         const speedModeFallback = speedModeInputFallback ? parseInt(speedModeInputFallback.value) || 100 : 100;
+                        if (DEBUG_MODE) console.log(`[SPEED DEBUG] Loop ${i} (fallback): Adding M220 S${speedModeFallback} before print G-code`);
                         parts.push(`M220 S${speedModeFallback} ; Set speed mode\n`);
                         parts.push(printGcodeStr);
                         parts.push('\n');
@@ -7913,6 +8122,26 @@ M400 ; Wait for all motion to complete
         // CRITICAL: Also use preserved original tool command here to prevent M620 S255A and T255 errors
         result = result.replace(/\[initial_no_support_extruder\]/g, initialExtruderFinal);
         
+        // STEP 4: Replace M220 S100 with user's selected speed mode (if speed mode is set)
+        // This ensures the speed setting is applied in the start code, not overridden
+        const speedModeInput = document.getElementById('speedMode');
+        if (speedModeInput) {
+            const speedMode = parseInt(speedModeInput.value) || 100;
+            const beforeReplace = result;
+            // Replace M220 S100 with M220 S{speedMode} to apply user's speed setting
+            result = result.replace(/M220\s+S100\s*;.*Reset\s+Feedrate/gi, `M220 S${speedMode} ;Reset Feedrate (Looprint: ${speedMode}% speed)`);
+            // Also handle variations without comment
+            result = result.replace(/M220\s+S100\s*$/gm, `M220 S${speedMode} ;Reset Feedrate (Looprint: ${speedMode}% speed)`);
+            
+            // DEBUG: Log if replacement occurred
+            if (DEBUG_MODE && beforeReplace !== result) {
+                const replacementCount = (result.match(new RegExp(`M220 S${speedMode}`, 'g')) || []).length;
+                console.log(`[SPEED DEBUG] Replaced M220 S100 with M220 S${speedMode} in start code. Found ${replacementCount} M220 S${speedMode} command(s).`);
+            } else if (DEBUG_MODE && speedMode !== 100) {
+                console.warn(`[SPEED DEBUG] Speed mode is ${speedMode}% but no M220 S100 found to replace in start code. Speed may not be applied correctly.`);
+            }
+        }
+        
         // A1-specific: Replace {nozzle_temperature_initial_layer[initial_no_support_extruder]} expressions
         // NOTE: [initial_no_support_extruder] is already replaced above in expressions, so these patterns should now use numeric values
         // But we still need to handle any remaining ones that weren't caught by the earlier replacement
@@ -8746,8 +8975,20 @@ M400 ; Wait for all motion to complete
                         // Set speed mode before print G-code
                         const speedModeInputGcode = document.getElementById('speedMode');
                         const speedModeGcode = speedModeInputGcode ? parseInt(speedModeInputGcode.value) || 100 : 100;
+                        if (DEBUG_MODE) console.log(`[SPEED DEBUG] Loop ${i} (3MF): Adding M220 S${speedModeGcode} before print G-code`);
                         parts.push(`M220 S${speedModeGcode} ; Set speed mode\n`);
-                        parts.push(printGcodeExecutable.print);
+                        
+                        // CRITICAL: Replace any M220 S100 in print G-code itself to prevent speed reset during printing
+                        let printGcodeWithSpeed3MF = printGcodeExecutable.print;
+                        if (speedModeGcode !== 100) {
+                            const beforePrintReplace3MF = printGcodeWithSpeed3MF;
+                            printGcodeWithSpeed3MF = printGcodeWithSpeed3MF.replace(/M220\s+S100\b/g, `M220 S${speedModeGcode}`);
+                            if (DEBUG_MODE && beforePrintReplace3MF !== printGcodeWithSpeed3MF) {
+                                const replacementCount3MF = (printGcodeWithSpeed3MF.match(new RegExp(`M220 S${speedModeGcode}`, 'g')) || []).length;
+                                console.log(`[SPEED DEBUG] Loop ${i} (3MF): Replaced M220 S100 in print G-code with M220 S${speedModeGcode}. Found ${replacementCount3MF} M220 S${speedModeGcode} command(s) in print G-code.`);
+                            }
+                        }
+                        parts.push(printGcodeWithSpeed3MF);
                         parts.push('\n');
                     }
                 } else {
@@ -8761,6 +9002,7 @@ M400 ; Wait for all motion to complete
                         // Set speed mode before print G-code (fallback path)
                         const speedModeInputGcodeFallback = document.getElementById('speedMode');
                         const speedModeGcodeFallback = speedModeInputGcodeFallback ? parseInt(speedModeInputGcodeFallback.value) || 100 : 100;
+                        if (DEBUG_MODE) console.log(`[SPEED DEBUG] Loop ${i} (3MF fallback): Adding M220 S${speedModeGcodeFallback} before print G-code`);
                         parts.push(`M220 S${speedModeGcodeFallback} ; Set speed mode\n`);
                         parts.push(printGcodeExecutable);
                         parts.push('\n');
