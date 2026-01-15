@@ -4143,7 +4143,11 @@ M960 S5 P0 ; turn off logo lamp
             validationErrorLooprint: "Validation failed: This file has already been processed by Looprint. Please upload the original sliced file.",
             validationErrorFactorian: "Validation failed: This G-code file does not have Factorian's start/end code structure.",
             validationErrorParse: "Validation failed: Could not read or parse the file content. Ensure it is a valid G-code or 3MF file.",
-            validationSuccess: "File verified: Valid G-code or 3MF file detected. Start and end code will be added automatically.", step2Title: "2. Loop Configuration", loopsLabel: "Number of loops", safetyText: "I confirm this file was sliced with Brim enabled.",
+            validationSuccess: "File verified: Valid G-code or 3MF file detected. Start and end code will be added automatically.",
+            validationSuccessGcodeFactorian: "✓ File verified: G-code with Factorian Designs templates detected. Start and end code will be added automatically.",
+            validationSuccessGcodeBambu: "✓ File verified: G-code from Bambu Studio detected. Start and end code will be added automatically.",
+            validationSuccessGcodeStandard: "✓ File verified: G-code file detected. Start and end code will be added automatically.",
+            validationSuccess3MF: "✓ File verified: 3MF file detected. Start and end code will be added automatically.", step2Title: "2. Loop Configuration", loopsLabel: "Number of loops", safetyText: "I confirm this file was sliced with Brim enabled.",
             safetyHelp: "", generateBtn: "Generate Loop File", generateTestBtn: "Generate Test File", resetBtn: "Reset to Defaults", 
             outputReady: "Loop File Ready", outputDesc: "Your file has been looped into a single file with push-off sequences between each loop.", statLabelSource: "Source file:", statLabelLoops: "Total loops:",
             statLabelFilament: "Est. Filament usage:", statLabelTime: "Est. Total Print Time:", timeCooldownNote: "(estimate calculated with 60min cooldown per loop)", statLabelFileSize: "Est. File size:", statLabelPushDirection: "Push direction:", statLabelBedTemp: "Target Bed Temp:", statLabelPushOffset: "Z Push Offset:", downloadBtn: "Download Looped File",             footerText: "",
@@ -5817,6 +5821,7 @@ M400 ; Wait for all motion to complete
                                        gcodeContent.indexOf("github.com/NickiAndersen/looprint") !== -1;
                     
                     if (hasLooprint) {
+                        const dict = LANG.en;
                         statusEl.textContent = dict.validationErrorLooprint;
                         statusEl.style.color = "var(--danger)";
                         statusEl.style.display = "block";
@@ -6194,7 +6199,8 @@ M400 ; Wait for all motion to complete
                         }, 100);
                     }
                     
-                    statusEl.textContent = "File verified: Valid 3MF file detected. Start and end code will be added automatically.";
+                    const dict = LANG.en;
+                    statusEl.textContent = dict["validationSuccess3MF"] || "File verified: Valid 3MF file detected. Start and end code will be added automatically.";
                     statusEl.style.color = "var(--accent)";
                     statusEl.style.display = "block";
                     // Ensure button is enabled - use setTimeout to ensure DOM updates are complete
@@ -6338,20 +6344,26 @@ M400 ; Wait for all motion to complete
                     }
                     
                     // Note: Looprint can handle files without Factorian structure by adding start/end code automatically
-                    // We only warn users that Factorian templates are recommended for best results
-                    if (!hasFactorianStructure) {
-                        if (DEBUG_MODE) {
-                            console.log("[VALIDATION] G-code file does not have Factorian structure, but Looprint will add start/end code automatically");
-                        }
-                    } else {
-                        // G-code file has Factorian structure (preferred)
+                    // Set appropriate validation message based on file type
+                    if (hasFactorianStructure) {
+                        // G-code file has Factorian structure
+                        validationKey = "validationSuccessGcodeFactorian";
                         if (DEBUG_MODE) {
                             console.log("[VALIDATION] G-code file has Factorian structure");
                         }
+                    } else if (hasExecutableBlock || hasFeatureCustom) {
+                        // G-code from Bambu Studio (has EXECUTABLE_BLOCK_START or FEATURE: Custom but no Factorian signature)
+                        validationKey = "validationSuccessGcodeBambu";
+                        if (DEBUG_MODE) {
+                            console.log("[VALIDATION] G-code file from Bambu Studio detected (no Factorian structure)");
+                        }
+                    } else {
+                        // Standard G-code file (no special structure)
+                        validationKey = "validationSuccessGcodeStandard";
+                        if (DEBUG_MODE) {
+                            console.log("[VALIDATION] Standard G-code file detected (no Factorian structure)");
+                        }
                     }
-                    
-                    // File is valid - Looprint can handle it (with or without Factorian structure)
-                    validationKey = "validationSuccess";
                     validationColor = "var(--accent)";
                     
                     // CRITICAL: Detect printer model from G-code header FIRST (before placement detection)
@@ -6423,6 +6435,57 @@ M400 ; Wait for all motion to complete
                         } else {
                             detectedPrinterModel = 'A1';
                             if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 from G-code");
+                        }
+                    }
+                    
+                    // Fallback: Try to detect from CONFIG_BLOCK (Bambu Studio format)
+                    // This is needed for Bambu Studio files that don't have Factorian format
+                    if (!detectedPrinterModel && configBlockSection) {
+                        if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] Trying CONFIG_BLOCK detection for Bambu Studio file...");
+                        
+                        // Look for printer_model = "Bambu Lab P1P" format (G-code files use this)
+                        const printerModelMatch = configBlockSection.match(/printer_model\s*=\s*["']?([^"'\n]+)/i);
+                        if (printerModelMatch) {
+                            const modelName = printerModelMatch[1].trim();
+                            if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] Found printer_model in CONFIG_BLOCK:", modelName);
+                            
+                            // Check for specific models in the name
+                            if (modelName.match(/P1P|P1S|P1\b/i)) {
+                                detectedPrinterModel = 'P1';
+                                if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected P1/P1S/P1P from CONFIG_BLOCK printer_model");
+                            } else if (modelName.match(/X1C|X1\b/i)) {
+                                detectedPrinterModel = 'x1';
+                                if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected X1/X1C from CONFIG_BLOCK printer_model");
+                            } else if (modelName.match(/A1\s+mini|A1Mini/i)) {
+                                detectedPrinterModel = 'A1Mini';
+                                if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 Mini from CONFIG_BLOCK printer_model");
+                            } else if (modelName.match(/A1\b/i)) {
+                                detectedPrinterModel = 'A1';
+                                if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 from CONFIG_BLOCK printer_model");
+                            }
+                        }
+                        
+                        // Also check print_compatible_printers (backup method)
+                        if (!detectedPrinterModel) {
+                            const compatiblePrintersMatch = configBlockSection.match(/print_compatible_printers\s*=\s*["']([^"']+)["']/i);
+                            if (compatiblePrintersMatch) {
+                                const compatiblePrinters = compatiblePrintersMatch[1];
+                                if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] Found print_compatible_printers:", compatiblePrinters);
+                                
+                                if (compatiblePrinters.match(/P1P|P1S|P1\b/i)) {
+                                    detectedPrinterModel = 'P1';
+                                    if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected P1/P1S/P1P from print_compatible_printers");
+                                } else if (compatiblePrinters.match(/X1C|X1\b/i)) {
+                                    detectedPrinterModel = 'x1';
+                                    if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected X1/X1C from print_compatible_printers");
+                                } else if (compatiblePrinters.match(/A1\s+mini|A1Mini/i)) {
+                                    detectedPrinterModel = 'A1Mini';
+                                    if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 Mini from print_compatible_printers");
+                                } else if (compatiblePrinters.match(/A1\b/i)) {
+                                    detectedPrinterModel = 'A1';
+                                    if (DEBUG_MODE) console.log("[PRINTER MODEL DEBUG] ✓ Detected A1 from print_compatible_printers");
+                                }
+                            }
                         }
                     }
                     
